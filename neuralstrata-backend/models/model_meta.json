@@ -1,0 +1,47 @@
+{
+  "model": "ttf_model_v1",
+  "algorithm": "xgboost.XGBRegressor",
+  "trained_at": "2026-08-25T21:36:58+00:00",
+  "dataset": "/Users/mohneeshpurohit/Documents/GitHub/Neural_Strata/neuralstrata-ai/datasets/drill_dataset.csv",
+  "n_windows_total": 7870,
+  "split": {
+    "design": "v2",
+    "held_out_critical_run": [
+      "node_1_01"
+    ],
+    "validation_run": [
+      "node_2_09"
+    ],
+    "warning_runs_trained_and_evaluated": [
+      "node_1_03",
+      "node_1_05",
+      "node_1_07",
+      "node_2_03",
+      "node_2_07"
+    ],
+    "breach_sample_weight": 5.0
+  },
+  "runs_test": [
+    "node_1_01",
+    "node_1_03",
+    "node_1_05",
+    "node_1_07",
+    "node_2_03",
+    "node_2_07"
+  ],
+  "best_iteration": 216,
+  "metrics": {
+    "held_out_critical_mae_s": 5.36,
+    "held_out_critical_rmse_s": 9.49,
+    "warning_insample_mae_s": 0.14,
+    "warning_insample_rmse_s": 0.28,
+    "stable_mae_s": null,
+    "overall_mae_s": 0.74,
+    "overall_rmse_s": 3.22,
+    "bin_5min_accuracy": 1.0,
+    "bin_5min_precision": 1.0,
+    "bin_5min_recall": 1.0
+  },
+  "stable_label": 3600.0,
+  "binary_threshold_s": 300.0
+}

@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"name": "neuralstrata-nodes",
+			"path": "neuralstrata-nodes"
+		}
+	],
+	"settings": {}
+}

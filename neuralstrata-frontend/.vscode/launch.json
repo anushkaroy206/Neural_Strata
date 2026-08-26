@@ -1,0 +1,27 @@
+{
+  // Press F5 to start the backend with the debugger attached.
+  // Breakpoints in backend/app/sources.py will hit on every poll.
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Backend: FastAPI (reload)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": ["app.main:app", "--reload", "--port", "8000"],
+      "cwd": "${workspaceFolder}/backend",
+      "jinja": false,
+      "justMyCode": true,
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Backend: reference server (no dependencies)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/server/app.py",
+      "args": ["--port", "8000"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    }
+  ]
+}

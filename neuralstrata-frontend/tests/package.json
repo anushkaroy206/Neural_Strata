@@ -1,0 +1,8 @@
+{
+  "name": "neural-strata-tests",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Headless regression suite for the Neural Strata dashboard",
+  "scripts": { "test": "node regression.js" },
+  "dependencies": { "jsdom": "^24.0.0" }
+}
