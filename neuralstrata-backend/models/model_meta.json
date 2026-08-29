@@ -1,7 +1,7 @@
 {
   "model": "ttf_model_v1",
   "algorithm": "xgboost.XGBRegressor",
-  "trained_at": "2026-08-25T21:36:58+00:00",
+  "trained_at": "2026-08-27T18:07:50+00:00",
   "dataset": "/Users/mohneeshpurohit/Documents/GitHub/Neural_Strata/neuralstrata-ai/datasets/drill_dataset.csv",
   "n_windows_total": 7870,
   "split": {

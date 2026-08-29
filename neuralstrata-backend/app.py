@@ -79,7 +79,7 @@ _load_dotenv()
 DB_HOST = os.environ.get("NS_DB_HOST", "localhost")
 DB_NAME = os.environ.get("NS_DB_NAME", "neural_strata")
 DB_USER = os.environ.get("NS_DB_USER", "postgres")
-DB_PASS = os.environ.get("NS_DB_PASS", "your_password_here")
+DB_PASS = os.environ.get("NS_DB_PASS", "your_password")
 SERIAL_PORT = os.environ.get("NS_SERIAL_PORT", "/dev/cu.usbserial-0001")
 BAUD_RATE = int(os.environ.get("NS_BAUD_RATE", "115200"))
 
@@ -134,8 +134,15 @@ history = {
     "node_2": deque(maxlen=HISTORY_MAX),
 }
 # Scenario console overlay. Hardware updates skip a node while it is injected.
+# Scenario console overlay. Hardware updates skip a node while it is injected.
 injections = {"node_1": None, "node_2": None}
 injection_t = {"node_1": 0.0, "node_2": 0.0}
+
+# --- CREW REGISTRY (tracks each RFID tag's live zone) ---
+crew_registry = {}        # uid -> {"name": str, "zone": str}
+evac_stage = 0            # 0=idle, 1=evacuating, 2=mustered
+evac_timer = 0.0
+evac_armed = False
 
 MINERS = {
     "001": "Mohneesh",
@@ -160,9 +167,15 @@ def log_telemetry_rows(rows):
         if not conn:
             return
         cur = conn.cursor()
+        # Round the values in Python for every row before sending to Postgres
+        cleaned_rows = [
+            (int(str(r[0]).replace('node_', '')), round(float(r[1]), 4), round(float(r[2]), 4), round(float(r[3]), 4)) 
+            for r in rows
+        ]
+        
         cur.executemany(
             "INSERT INTO sensor_telemetry (node_id, tilt_x, displacement_mm, acceleration) VALUES (%s, %s, %s, %s)",
-            rows,
+            cleaned_rows
         )
         conn.commit()
         cur.close()
@@ -435,7 +448,8 @@ def apply_injections(dt):
 def hardware_reader_thread():
     """Reads USB Serial JSON from ESP32 Hub, updates state, and logs to PostgreSQL."""
     global telemetry_state
-
+    last_sent_cmd = None
+    
     try:
         ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1)
         print(f"Connected to ESP32 Hub on {SERIAL_PORT}")
@@ -458,16 +472,35 @@ def hardware_reader_thread():
 
                     if "uid" in data and data["uid"]:
                         uid = str(data["uid"])
-                        miner_name = MINERS.get(uid, "Personnel Tag")
-                        zone = "Tunnel A" if telemetry_state["underground"]["route_A_status"] == "OPEN" else "Safe Exit"
-                        rfid_row = (uid, zone)
+                        
+                        # If brand new tag, register them
+                        if uid not in crew_registry:
+                            default_zone = "Tunnel A" if telemetry_state["underground"]["route_A_status"] == "OPEN" else "Safe Exit"
+                            crew_registry[uid] = {"name": MINERS.get(uid, "Personnel Tag"), "zone": default_zone}
+                        else:
+                            # If they were mustered at Safe Exit and scan again, send them back underground
+                            if crew_registry[uid]["zone"] == "Safe Exit":
+                                crew_registry[uid]["zone"] = "Tunnel A"
 
-                        log_entry = {"id": uid, "name": miner_name, "zone": zone, "time": time.strftime("%H:%M:%S")}
-                        telemetry_state["rfid_log"].insert(0, log_entry)
-                        if len(telemetry_state["rfid_log"]) > 10:
-                            telemetry_state["rfid_log"].pop()
+                        current_zone = crew_registry[uid]["zone"]
+                        rfid_row = (uid, current_zone)
 
-                        push_event("NOMINAL", f"RFID {uid} ({miner_name}) registered at Hub.")
+                        # ... rest of the logging code stays the same ...
+
+                        log_entry = {"id": uid, "name": crew_registry[uid]["name"],
+                                     "zone": current_zone, "time": time.strftime("%H:%M:%S")}
+                        # Only insert/update if zone changed (prevents duplicates)
+                        existing = next((e for e in telemetry_state["rfid_log"] if e["id"] == uid), None)
+                        if not existing or existing["zone"] != current_zone:
+                            if existing:
+                                existing["zone"] = current_zone
+                                existing["time"] = time.strftime("%H:%M:%S")
+                            else:
+                                telemetry_state["rfid_log"].insert(0, log_entry)
+                                if len(telemetry_state["rfid_log"]) > 10:
+                                    telemetry_state["rfid_log"].pop()
+
+                        push_event("NOMINAL", f"RFID {uid} ({crew_registry[uid]['name']}) registered at Hub.")
 
                     if "node" in data:
                         n_id = "node_1" if str(data["node"]) == "1" else "node_2"
@@ -478,6 +511,22 @@ def hardware_reader_thread():
                             node["tilt_x"] = raw_tilt
                             calculate_derivatives(n_id, raw_disp)
                             update_status_logic()
+
+                    # --- NEW ALERT LOGIC (START) ---
+                    # 1. Safely grab the current TTF integer (ignoring "N/A" strings)
+                    current_ttf = telemetry_state.get("ttf_seconds", 999999)
+                    if isinstance(current_ttf, str):
+                        current_ttf = 999999
+                        
+                    # 2. Trigger if the dashboard is CRITICAL or AI predicts failure in < 3 mins
+                    is_critical = (telemetry_state["system_status"] == "CRITICAL" or current_ttf < 180)
+                    cmd_to_send = b"CRITICAL\n" if is_critical else b"SAFE\n"
+                    
+                    # 3. Only send data down the USB if the state has changed
+                    if cmd_to_send != last_sent_cmd:
+                        ser.write(cmd_to_send)
+                        last_sent_cmd = cmd_to_send
+                    # --- NEW ALERT LOGIC (END) ---
 
                 if rfid_row:
                     conn = get_db_connection()
@@ -498,6 +547,42 @@ def hardware_reader_thread():
 
         time.sleep(0.05)
 
+def run_evacuation(dt):
+    """Mirror the SIM's evacStage logic: Tunnel -> Evacuating -> Safe Exit."""
+    global evac_stage, evac_timer, evac_armed
+    status = telemetry_state["system_status"]
+    # Reset when system is no longer critical
+    if status != "CRITICAL":
+        evac_stage = 0
+        evac_timer = 0.0
+        evac_armed = False
+        return
+    # First CRITICAL detection: arm and announce
+    if not evac_armed:
+        evac_armed = True
+        push_event("CRITICAL", "MUSTER CALL — crews in tunnels must evacuate.")
+        return
+    # Advance timer
+    evac_timer += dt
+    # Stage 0 -> 1: move tunnel crew to "Evacuating X"
+    if evac_stage == 0 and evac_timer > 1.5:
+        for uid in crew_registry:
+            z = crew_registry[uid]["zone"]
+            if z == "Tunnel A":
+                crew_registry[uid]["zone"] = "Evacuating A"
+            elif z == "Tunnel B":
+                crew_registry[uid]["zone"] = "Evacuating B"
+        evac_stage = 1
+        evac_timer = 0.0
+        push_event("CRITICAL", "Crews evacuating — RFID gates live.")
+    # Stage 1 -> 2: move evacuating crew to Safe Exit
+    elif evac_stage == 1 and evac_timer > 6.5:
+        for uid in crew_registry:
+            z = crew_registry[uid]["zone"]
+            if z.startswith("Evacuating"):
+                crew_registry[uid]["zone"] = "Safe Exit"
+        evac_stage = 2
+        push_event("WARNING", "All underground crews at Safe Exit.")
 
 def ticker_thread():
     """Advance scenario injections, keep rolling chart history, and log state to the DB."""
@@ -509,6 +594,7 @@ def ticker_thread():
         with state_lock:
             apply_injections(0.05)
             update_status_logic()
+            run_evacuation(0.05)
             telemetry_state["timestamp"] = time.strftime("%H:%M:%S")
             if t0 - last_hist >= HISTORY_INTERVAL:
                 snapshot_history()
@@ -554,10 +640,14 @@ def get_telemetry():
 
 
 @app.route("/api/extended", methods=["GET"])
+@app.route("/api/extended", methods=["GET"])
+
 def get_extended():
     with state_lock:
-        ug_count = len([m for m in telemetry_state["rfid_log"] if "Tunnel" in m.get("zone", "") or "Evacuating" in m.get("zone", "")])
-        safe_count = len([m for m in telemetry_state["rfid_log"] if m.get("zone") == "Safe Exit"])
+        ug_count = sum(1 for info in crew_registry.values()
+                       if "Tunnel" in info["zone"] or "Evacuating" in info["zone"])
+        safe_count = sum(1 for info in crew_registry.values()
+                         if info["zone"] == "Safe Exit")
         ext = {
             "mode": "LIVE",
             "nodes": {
@@ -570,7 +660,11 @@ def get_extended():
                     "peak_acceleration": peak_accel["node_2"],
                 },
             },
-            "muster": {"total": len(telemetry_state["rfid_log"]), "underground": ug_count, "safe": safe_count},
+            "muster": {
+                "total": len(crew_registry),
+                "underground": ug_count,
+                "safe": safe_count,
+            },
             "events": list(events_log),
         }
     return jsonify(ext)

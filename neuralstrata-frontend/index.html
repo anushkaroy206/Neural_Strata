@@ -3412,16 +3412,14 @@ function backendOk(){
 }
 /* ---------------------------------------------------------------
    BACKEND LOCATION
-   Default '' = same origin as this page (neuralstrata-backend/app.py
-   and server/app.py both serve the API + this file).
+   Default '' = same origin as this page (server/app.py serves both).
    Point the dashboard at a backend on another host/port either by
    setting window.NEURAL_STRATA_API in a script tag placed before
    this page's own scripts, e.g.
        window.NEURAL_STRATA_API = 'https://mine-api.example.net';
    or by loading the page with  ?api=https://mine-api.example.net
-   Opening this file directly, or via a static server on 8080/5500,
-   defaults to the hardware edge server at http://127.0.0.1:5000.
-   A cross-origin backend must send CORS headers.
+   A cross-origin backend must send CORS headers (the reference
+   server already sends Access-Control-Allow-Origin: *).
    --------------------------------------------------------------- */
 const API_BASE=(function(){
   var b='';
@@ -3429,8 +3427,6 @@ const API_BASE=(function(){
     var q=new URLSearchParams(location.search).get('api');
     if(q)b=q;
     else if(typeof window.NEURAL_STRATA_API==='string')b=window.NEURAL_STRATA_API;
-    else if(location.protocol==='file:' || /^(8080|5500)$/.test(location.port))
-      b='http://127.0.0.1:5000';
   }catch(e){}
   return String(b||'').replace(/\/+$/,'');
 })();
