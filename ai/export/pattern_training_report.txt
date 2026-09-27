@@ -1,0 +1,65 @@
+Neural Strata — Model 1 · Deformation Pattern Discriminator
+==============================================================================
+trained_at      2026-09-23T19:16:39+00:00
+dataset         ai/datasets/pattern_dataset.csv
+windows         43,092   runs 420
+
+WHY THIS MODEL EXISTS
+  Model 2 extrapolates displacement and cannot tell WHAT is moving the
+  ground. A truck reads as a short TTF and fires the siren; a crack masked
+  by background vibration reads as stable. M1 supplies the missing
+  question — what kind of event is this — and may never suppress an alert.
+
+SPLIT — by run_id, three ways
+  train  26,370 windows /  252 runs
+  val     8,514 windows /   84 runs   <- threshold chosen here
+  test    8,208 windows /   84 runs   <- every number below
+  A row split would put windows of the same event on both sides of the
+  fence (they overlap by 60 s) and report a meaningless ~99%.
+
+CALIBRATION
+  target            STRUCTURAL recall ≥ 0.98
+  operating thresh  0.05   (lowest on the grid reaching the target)
+  achieved recall   1.0000
+  achieved precision  1.0000
+
+TEST METRICS
+  macro F1          0.9974
+  QUIET false-pos   0.0000
+  env suppression P 1.0000
+  QUIET        recall 1.000   precision 0.986
+  ENVIRONMENTAL recall 0.993   precision 1.000
+  STRUCTURAL   recall 1.000   precision 1.000
+  UNKNOWN      recall 1.000   precision 1.000
+
+CONFUSION MATRIX (rows = truth, cols = predicted)
+                   QUIET  ENVIRO  STRUCT  UNKNOW
+  QUIET          1,336       0       0       0
+  ENVIRONMENTAL      19   2,813       0       0
+  STRUCTURAL         0       0   2,960       0
+  UNKNOWN            0       0       0   1,080
+
+FEATURE IMPORTANCE — top 8
+  v60                        0.1392
+  d60                        0.1256
+  accel_max60                0.1012
+  recovery_ratio             0.0959
+  disp_now                   0.0862
+  accel_std60                0.0614
+  zero_cross_rate            0.0535
+  spatial_decay              0.0458
+
+  core-16 share 0.660   new-16 share 0.340
+  latency 0.080 ms/window (serving fast path)   fit 0.48 s
+  latency 3.371 ms/window (sklearn predict_proba, not used)
+  fast path vs sklearn max abs diff 4.44e-16
+
+SEVEN-LABEL COMPOSITION OF THE TEST SET (secondary detail)
+  QUIET        QUIET=1,336
+  ENVIRONMENTAL BLAST=432, MACHINERY=780, RAIN_SEEPAGE=1,620
+  STRUCTURAL   STRUCTURAL_INITIATION=960, STRUCTURAL_TERTIARY=2,000
+  UNKNOWN      SENSOR_FAULT=1,080
+
+ARTIFACTS
+  /Users/mohneeshpurohit/Documents/GitHub/Neural_Strata/backend/models/pattern_model_v1.json
+  /Users/mohneeshpurohit/Documents/GitHub/Neural_Strata/backend/models/pattern_meta.json

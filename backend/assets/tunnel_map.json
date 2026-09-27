@@ -1,0 +1,174 @@
+{
+  "site": {
+    "name": "Jharia panel — 1:1000 diorama",
+    "center": [
+      23.643,
+      85.318
+    ],
+    "scale": "1 cm diorama = 10 m (m = cm x 10)"
+  },
+  "note": "OFFSETS ARE STILL PLACEHOLDER VALUES. Measure each point in cm from the SW corner of the diorama, then set d_e_m = x_cm x 10 and d_n_m = y_cm x 10.",
+  "nodes": {
+    "node_1": {
+      "label": "N1 — Tunnel A · near",
+      "level": 1,
+      "zone": "A1",
+      "d_n_m": 15,
+      "d_e_m": 20
+    },
+    "node_2": {
+      "label": "N2 — Tunnel A · collapse face",
+      "level": 1,
+      "zone": "A2",
+      "d_n_m": 15,
+      "d_e_m": 90
+    },
+    "node_3": {
+      "label": "N3 — Tunnel B · near",
+      "level": 2,
+      "zone": "B1",
+      "d_n_m": 45,
+      "d_e_m": 20,
+      "active": true,
+      "active_note": "True from Phase 7: all four nodes are in the pipeline (config.ACTIVE_NODES, the simulator, and the telemetry table all carry four). 'active' means *wired and reporting* — it is not a survey field, and the survey below is still outstanding."
+    },
+    "node_4": {
+      "label": "N4 — Tunnel B · far",
+      "level": 2,
+      "zone": "B2",
+      "d_n_m": 45,
+      "d_e_m": 90,
+      "active": true,
+      "active_note": "True from Phase 7: all four nodes are in the pipeline (config.ACTIVE_NODES, the simulator, and the telemetry table all carry four). 'active' means *wired and reporting* — it is not a survey field, and the survey below is still outstanding."
+    }
+  },
+  "junctions": [
+    {
+      "id": "J1",
+      "level": 1,
+      "d_n_m": 15,
+      "d_e_m": 45
+    },
+    {
+      "id": "J2",
+      "level": 1,
+      "d_n_m": 15,
+      "d_e_m": 105
+    },
+    {
+      "id": "J3",
+      "level": 2,
+      "d_n_m": 45,
+      "d_e_m": 45
+    },
+    {
+      "id": "J4",
+      "level": 2,
+      "d_n_m": 45,
+      "d_e_m": 105
+    }
+  ],
+  "exits": [
+    {
+      "id": "EXIT1",
+      "label": "Exit 1 (west)",
+      "d_n_m": 30,
+      "d_e_m": 5
+    },
+    {
+      "id": "EXIT2",
+      "label": "Exit 2 (east)",
+      "d_n_m": 30,
+      "d_e_m": 115
+    }
+  ],
+  "links": [
+    [
+      "EXIT1",
+      "J1"
+    ],
+    [
+      "J1",
+      "J2"
+    ],
+    [
+      "J2",
+      "J3"
+    ],
+    [
+      "J3",
+      "J4"
+    ],
+    [
+      "J4",
+      "EXIT2"
+    ],
+    [
+      "node_1",
+      "J1"
+    ],
+    [
+      "node_2",
+      "J2"
+    ],
+    [
+      "node_3",
+      "J3"
+    ],
+    [
+      "node_4",
+      "J4"
+    ]
+  ],
+  "zones": [
+    {
+      "id": "A1",
+      "name": "Tunnel A · near",
+      "rect": [
+        0,
+        0,
+        60,
+        30
+      ]
+    },
+    {
+      "id": "A2",
+      "name": "Tunnel A · far",
+      "rect": [
+        60,
+        0,
+        120,
+        30
+      ]
+    },
+    {
+      "id": "B1",
+      "name": "Tunnel B · near",
+      "rect": [
+        0,
+        30,
+        60,
+        60
+      ]
+    },
+    {
+      "id": "B2",
+      "name": "Tunnel B · far",
+      "rect": [
+        60,
+        30,
+        120,
+        60
+      ]
+    }
+  ],
+  "survey": {
+    "status": "PLACEHOLDER",
+    "measured_on": null,
+    "method": "centimetres from the SW corner of the diorama, x -> east, y -> north",
+    "scale_rule": "d_e_m = x_cm x 10, d_n_m = y_cm x 10   (1 cm diorama = 10 m ground)",
+    "units_in_this_file": "metres",
+    "check": "All four zones tile [0,0]-[120,60] m and every node, junction and exit falls inside its declared zone. The numbers are self-consistent; they are simply not yet measurements.",
+    "why_it_matters": "Dijkstra costs are real Euclidean lengths between these points, so a wrong survey gives a wrong route — the map is only as good as the numbers in it (§7.9)."
+  }
+}

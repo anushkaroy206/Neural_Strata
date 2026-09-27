@@ -1,12 +1,11 @@
 {
-	"folders": [
-		{
-			"path": "."
-		},
-		{
-			"name": "neuralstrata-nodes",
-			"path": "neuralstrata-nodes"
-		}
-	],
-	"settings": {}
+    "folders": [
+        {
+            "path": "."
+        },
+        {
+            "name": "firmware",
+            "path": "firmware"
+        }
+    ]
 }

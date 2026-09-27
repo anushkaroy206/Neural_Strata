@@ -1,0 +1,69 @@
+{
+  "manifest_version": 1,
+  "schema": 2,
+  "generated": "2026-09-22",
+  "purpose": "Pins which model artifacts belong together. Prevents the demo-day failure mode of a new Model 1 running against an old scaler, or a feature list that grew by two without the scaler noticing.",
+  "features": [
+    "disp_now",
+    "d10",
+    "d30",
+    "d60",
+    "v10",
+    "v30",
+    "v60",
+    "disp_max60",
+    "accel_now",
+    "accel_mean60",
+    "accel_std60",
+    "accel_max60",
+    "jerk",
+    "tilt_now",
+    "tilt_d30",
+    "ttf_fuk"
+  ],
+  "model_1": {
+    "file": "pattern_model_v1.json",
+    "kind": "RandomForestClassifier",
+    "meta": "pattern_meta.json",
+    "threshold": 0.05,
+    "required": false,
+    "phase": 5,
+    "note": "Deformation Pattern Discriminator. Trained in Phase 5 on the 420-run counterfactual corpus, macro F1 0.9977. Served through engine/pattern.py's fast path at 0.24 ms/window. required=false: an absent artifact degrades to M2-only, which is the Phase 4 system. Operating threshold 0.05 (grid floor \u2014 never read it as a tuned point)."
+  },
+  "model_2": {
+    "file": "ttf_model_v2.json",
+    "kind": "ttf_quantile_trio",
+    "meta": "model_meta.json",
+    "quantiles": [
+      0.1,
+      0.5,
+      0.9
+    ],
+    "required": false,
+    "phase": 5,
+    "note": "Quantile trio, one file, self-contained: features + scaler + three boosters written in a single statement, so no scaler drift is possible. ttf_model_v1.json is kept on disk as the rollback, but note that its original scaler.json was superseded in Phase 5 by the corpus retrain, so rolling back requires the scaler from that training run as well.",
+    "fallback": "ttf_model_v1.json"
+  },
+  "scaler": {
+    "file": "scaler.json",
+    "required": false,
+    "phase": 0,
+    "note": "Shared scaling contract. Its feature list must equal contracts' canonical order \u2014 enforced by tools/check_contracts.py."
+  },
+  "kinematic": {
+    "file": "kinematic_calibration.json",
+    "required": false,
+    "phase": 5,
+    "reader": "engine/kinematic.py",
+    "note": "Fukuzono alpha/A. **D2's orphan is closed**: engine/kinematic.py reads it, load_calibration() validates all five law keys by name, and the analytic horizon uses both alpha and A. required=false: an absent or invalid file falls back to the documented defaults and calibration_info() reports source=defaults, so a default is never presented as a calibrated law. Phase 6 still owns the get_ai() kinematic block and the update_status_logic extraction (\u00a76.2.1)."
+  },
+  "novelty": {
+    "file": null,
+    "meta": "novelty_meta.json",
+    "required": false,
+    "enabled": true,
+    "phase": 13,
+    "note": "Advisory z-distance from the serving TTF scaler. Never a gate. Opened after DOUBLE_AI_GATE.md recorded a pass."
+  },
+  "boot_policy": "ANY_MISSING_ARTIFACT => LOG + DEGRADE, NEVER CRASH"
+}

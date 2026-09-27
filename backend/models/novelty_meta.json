@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "reason": "Double-AI gate recorded a pass. The score is the z-distance of the live window from the serving TTF model's own scaler. Advisory only: it does not raise severity, gate an evacuation, or sit on the critical path.",
+  "artifact": null,
+  "artifact_committed": false,
+  "source": "ttf_scaler_z",
+  "advisory_only": true,
+  "may_never": [
+    "raise severity",
+    "gate an evacuation",
+    "sit on the critical path"
+  ]
+}

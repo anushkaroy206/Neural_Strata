@@ -1,0 +1,62 @@
+{
+  "site_id": "site-jharia-panel-01",
+  "name": "Jharia panel — 1:1000 diorama",
+  "short_name": "Jharia panel",
+
+  "georeference": {
+    "baseline_lat": 23.643,
+    "baseline_lon": 85.318,
+    "comment": "Fixed baseline. There is NO GPS module in this build — the site origin is a constant, and every node/junction/exit position is a metre offset from it.",
+    "metres_per_degree_lat": 110574.0,
+    "metres_per_degree_lon": 102470.0,
+    "metres_per_degree_lon_comment": "cos(23.643°) x 111320 ≈ 102470 — computed for this latitude once so the GIS payload never does trig per request.",
+    "bearing_deg": 0.0,
+    "bearing_comment": "0° = the diorama's north edge is true north. d_n_m grows north, d_e_m grows east."
+  },
+
+  "diorama": {
+    "scale": "1 cm diorama = 10 m (m = cm x 10)",
+    "scale_factor_m_per_cm": 10,
+    "extent_cm": [120, 60],
+    "extent_m": [1200, 600],
+    "origin": "SW corner"
+  },
+
+  "extents_m": {
+    "north_south": 60,
+    "east_west": 120,
+    "comment": "Working extent before the cm→m scale factor. Zones and link costs are expressed in these metres."
+  },
+
+  "exits": [
+    {"id": "EXIT1", "label": "Exit 1 (west)", "d_n_m": 30, "d_e_m": 5,   "level": 1},
+    {"id": "EXIT2", "label": "Exit 2 (east)", "d_n_m": 30, "d_e_m": 115, "level": 2}
+  ],
+
+  "levels": {
+    "1": {"name": "Level 1", "nodes": ["node_1", "node_2"], "junctions": ["J1", "J2"], "exits": ["EXIT1", "EXIT2"]},
+    "2": {"name": "Level 2", "nodes": ["node_3", "node_4"], "junctions": ["J3", "J4"], "exits": ["EXIT2"]}
+  },
+
+  "topology": {
+    "sensor_nodes": 4,
+    "level_hubs": 2,
+    "main_hubs": 1,
+    "junctions": 4,
+    "comment": "4 sensor nodes · 2 level hubs · 1 main hub = 7 boards. Junctions are PASSIVE — wire and lamp only, no MCU of their own."
+  },
+
+  "tunnels": [
+    {"id": "A", "name": "Tunnel A", "level": 1, "nodes": ["node_1", "node_2"], "zone": ["A1", "A2"]},
+    {"id": "B", "name": "Tunnel B", "level": 2, "nodes": ["node_3", "node_4"], "zone": ["B1", "B2"]}
+  ],
+
+  "render": {
+    "node_marker_radius_m": 3,
+    "link_default_cost": 45.0,
+    "link_cost_comment": "Metres of travel. Phase 7 replaces this with a hazard-weighted cost; the number here is the calm-conditions baseline.",
+    "hazard_link_cost_multiplier": 4.0
+  },
+
+  "dataset_provenance_note": "Positions are PLACEHOLDERS until the diorama is laid out. Measure each point in cm from the SW corner and set d_e_m = x_cm x 10, d_n_m = y_cm x 10 — the same rule as tunnel_map.json."
+}

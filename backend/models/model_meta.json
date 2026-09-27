@@ -1,0 +1,28 @@
+{
+  "model": "ttf_model_v1",
+  "algorithm": "xgboost.XGBRegressor",
+  "trained_at": "2026-08-25T21:41:33+00:00",
+  "dataset": "ai/datasets/drill_dataset.csv (harvest, 18 runs: 9 breach / 9 stable)",
+  "n_windows_total": 7870,
+  "split": {
+    "design": "v2",
+    "held_out_critical_run": "node_1_01",
+    "warning_runs_trained_and_evaluated": true,
+    "breach_sample_weight": 5.0
+  },
+  "best_iteration": null,
+  "metrics": {
+    "held_out_critical_mae_s": 0.1,
+    "held_out_critical_rmse_s": 0.42,
+    "warning_insample_mae_s": 0.08,
+    "warning_insample_rmse_s": 0.15,
+    "overall_mae_s": 0.09,
+    "overall_rmse_s": 0.23,
+    "bin_5min_accuracy": 1.0,
+    "bin_5min_precision": 1.0,
+    "bin_5min_recall": 1.0
+  },
+  "stable_label": 3600.0,
+  "binary_threshold_s": 300.0,
+  "provenance": "restored in Phase 5. `02_training.py` overwrote this file while emitting (this is documented here because the loss is the point): it wrote v1, its scaler and its meta unconditionally, so retraining on the Phase 5 synthetic corpus replaced the record of the Phase 4 field-drill training while the artifact it describes, ttf_model_v1.json, was correctly preserved. Every value above is the one this file already published and that ai/README.md and the SRS quote; it has been written back so the gate keeps checking the claim it was written to check. The Phase 5 run's own metrics are in model_meta_v2.json. `02_training.py` now writes v1/scaler/meta only under --write-v1."
+}

@@ -1,0 +1,350 @@
+{
+ "exits": [
+  {
+   "id": "EXIT1",
+   "label": "Exit 1 (west)",
+   "lat": 23.64327131151989,
+   "level": null,
+   "lon": 85.3180487947692
+  },
+  {
+   "id": "EXIT2",
+   "label": "Exit 2 (east)",
+   "lat": 23.64327131151989,
+   "level": null,
+   "lon": 85.31912227969161
+  }
+ ],
+ "generated": "",
+ "hold": false,
+ "junctions": [
+  {
+   "id": "J1",
+   "lat": 23.643135655759945,
+   "level": 1,
+   "lon": 85.3184391529228,
+   "status": "OK"
+  },
+  {
+   "id": "J2",
+   "lat": 23.643135655759945,
+   "level": 1,
+   "lon": 85.31902469015321,
+   "status": "OK"
+  },
+  {
+   "id": "J3",
+   "lat": 23.64340696727983,
+   "level": 2,
+   "lon": 85.3184391529228,
+   "status": "OK"
+  },
+  {
+   "id": "J4",
+   "lat": 23.64340696727983,
+   "level": 2,
+   "lon": 85.31902469015321,
+   "status": "OK"
+  }
+ ],
+ "links": [
+  {
+   "base_m": 42.7,
+   "cost": 42.72,
+   "from": "EXIT1",
+   "hazard": 0.0,
+   "state": "UP",
+   "to": "J1"
+  },
+  {
+   "base_m": 60.0,
+   "cost": 60.0,
+   "from": "J1",
+   "hazard": 0.0,
+   "state": "UP",
+   "to": "J2"
+  },
+  {
+   "base_m": 67.1,
+   "cost": 67.08,
+   "from": "J2",
+   "hazard": 0.0,
+   "state": "UP",
+   "to": "J3"
+  },
+  {
+   "base_m": 60.0,
+   "cost": 60.0,
+   "from": "J3",
+   "hazard": 0.0,
+   "state": "UP",
+   "to": "J4"
+  },
+  {
+   "base_m": 18.0,
+   "cost": 18.03,
+   "from": "J4",
+   "hazard": 0.0,
+   "state": "UP",
+   "to": "EXIT2"
+  },
+  {
+   "base_m": 25.0,
+   "cost": 25.0,
+   "from": "node_1",
+   "hazard": 0.0,
+   "state": "UP",
+   "to": "J1"
+  },
+  {
+   "base_m": 15.0,
+   "cost": 15.0,
+   "from": "node_2",
+   "hazard": 0.0,
+   "state": "UP",
+   "to": "J2"
+  },
+  {
+   "base_m": 25.0,
+   "cost": 25.0,
+   "from": "node_3",
+   "hazard": 0.0,
+   "state": "UP",
+   "to": "J3"
+  },
+  {
+   "base_m": 15.0,
+   "cost": 15.0,
+   "from": "node_4",
+   "hazard": 0.0,
+   "state": "UP",
+   "to": "J4"
+  }
+ ],
+ "map_ok": true,
+ "nodes": [
+  {
+   "acceleration": 0.0,
+   "active": true,
+   "crack_stage": "NONE",
+   "displacement_mm": 5.0,
+   "id": "node_1",
+   "label": "N1 — Tunnel A · near",
+   "lat": 23.643135655759945,
+   "level": 1,
+   "lon": 85.3181951790768,
+   "stale": false,
+   "status": "NOMINAL",
+   "tilt_x": 0.0,
+   "zone": "A1"
+  },
+  {
+   "acceleration": 0.0,
+   "active": true,
+   "crack_stage": "NONE",
+   "displacement_mm": 5.0,
+   "id": "node_2",
+   "label": "N2 — Tunnel A · collapse face",
+   "lat": 23.643135655759945,
+   "level": 1,
+   "lon": 85.31887830584562,
+   "stale": false,
+   "status": "NOMINAL",
+   "tilt_x": 0.0,
+   "zone": "A2"
+  },
+  {
+   "acceleration": 0.0,
+   "active": true,
+   "crack_stage": "NONE",
+   "displacement_mm": 5.0,
+   "id": "node_3",
+   "label": "N3 — Tunnel B · near",
+   "lat": 23.64340696727983,
+   "level": 2,
+   "lon": 85.3181951790768,
+   "stale": false,
+   "status": "NOMINAL",
+   "tilt_x": 0.0,
+   "zone": "B1"
+  },
+  {
+   "acceleration": 0.0,
+   "active": true,
+   "crack_stage": "NONE",
+   "displacement_mm": 5.0,
+   "id": "node_4",
+   "label": "N4 — Tunnel B · far",
+   "lat": 23.64340696727983,
+   "level": 2,
+   "lon": 85.31887830584562,
+   "stale": false,
+   "status": "NOMINAL",
+   "tilt_x": 0.0,
+   "zone": "B2"
+  }
+ ],
+ "routes": {
+  "blocked": [],
+  "crews": {},
+  "hold": false,
+  "per_level": {
+   "1": {
+    "base_m": 67.7,
+    "blocked": [],
+    "cost": 67.72,
+    "eta_s": 56,
+    "exit": "EXIT1",
+    "from_worst_node": "node_1",
+    "hazard": 0.0,
+    "level": 1,
+    "path": [
+     "node_1",
+     "J1",
+     "EXIT1"
+    ],
+    "reason": "2 legs · 68 m at 1.2 m/s · risk-weighted ×1.00",
+    "src": "node_1",
+    "state": "OPEN"
+   },
+   "2": {
+    "base_m": 103.0,
+    "blocked": [],
+    "cost": 103.03,
+    "eta_s": 86,
+    "exit": "EXIT2",
+    "from_worst_node": "node_3",
+    "hazard": 0.0,
+    "level": 2,
+    "path": [
+     "node_3",
+     "J3",
+     "J4",
+     "EXIT2"
+    ],
+    "reason": "3 legs · 103 m at 1.2 m/s · risk-weighted ×1.00",
+    "src": "node_3",
+    "state": "OPEN"
+   }
+  },
+  "walk_speed_mps": 1.2
+ },
+ "site": {
+  "center": [
+   23.643,
+   85.318
+  ],
+  "name": "Jharia panel — 1:1000 diorama",
+  "positioning": "fixed baseline + offsets (GPS deferred — spec ready)",
+  "scale": "1 cm diorama = 10 m (m = cm x 10)",
+  "site_id": "site-jharia-panel-01",
+  "units": "offsets are metres from the SW corner"
+ },
+ "system_status": "NOMINAL",
+ "zones": [
+  {
+   "id": "A1",
+   "name": "Tunnel A · near",
+   "nodes": [
+    "node_1"
+   ],
+   "polygon": [
+    [
+     23.643,
+     85.318
+    ],
+    [
+     23.64327131151989,
+     85.318
+    ],
+    [
+     23.64327131151989,
+     85.3185855372304
+    ],
+    [
+     23.643,
+     85.3185855372304
+    ]
+   ],
+   "risk": "NOMINAL"
+  },
+  {
+   "id": "A2",
+   "name": "Tunnel A · far",
+   "nodes": [
+    "node_2"
+   ],
+   "polygon": [
+    [
+     23.643,
+     85.3185855372304
+    ],
+    [
+     23.64327131151989,
+     85.3185855372304
+    ],
+    [
+     23.64327131151989,
+     85.31917107446081
+    ],
+    [
+     23.643,
+     85.31917107446081
+    ]
+   ],
+   "risk": "NOMINAL"
+  },
+  {
+   "id": "B1",
+   "name": "Tunnel B · near",
+   "nodes": [
+    "node_3"
+   ],
+   "polygon": [
+    [
+     23.64327131151989,
+     85.318
+    ],
+    [
+     23.643542623039774,
+     85.318
+    ],
+    [
+     23.643542623039774,
+     85.3185855372304
+    ],
+    [
+     23.64327131151989,
+     85.3185855372304
+    ]
+   ],
+   "risk": "NOMINAL"
+  },
+  {
+   "id": "B2",
+   "name": "Tunnel B · far",
+   "nodes": [
+    "node_4"
+   ],
+   "polygon": [
+    [
+     23.64327131151989,
+     85.3185855372304
+    ],
+    [
+     23.643542623039774,
+     85.3185855372304
+    ],
+    [
+     23.643542623039774,
+     85.31917107446081
+    ],
+    [
+     23.64327131151989,
+     85.31917107446081
+    ]
+   ],
+   "risk": "NOMINAL"
+  }
+ ]
+}

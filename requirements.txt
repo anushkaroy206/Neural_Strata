@@ -1,0 +1,32 @@
+# Neural Strata — Python dependencies
+# =============================================================================
+# Pinned to the versions Phase 0 was built and verified against on 2026-09-22.
+# Install:  pip install -r requirements.txt
+#
+# The split matters at 1 a.m. before a demo: `core` is what the edge server needs
+# to boot and serve the dashboard. Nothing below the core block may be required
+# for the server to come up — a missing ML dependency degrades the AI card to the
+# kinematic fallback, and the runbook says so.
+
+# -- core: the edge server ------------------------------------------------
+flask==3.1.3                # HTTP endpoints + serves the dashboard
+flask-cors==6.0.5           # the dashboard may be opened from another origin
+psycopg2-binary==2.9.13     # PostgreSQL (local source of truth)
+pyserial==3.5               # USB link to the main hub
+numpy==2.3.5                # feature maths
+
+# -- model 2: the TTF regressor (optional at runtime, required for ACTIVE) --
+xgboost==3.4.1              # ttf_model_v1.json is an XGBRegressor
+
+# -- testing --------------------------------------------------------------
+pytest==9.0.3
+
+# -- ai notebooks only (ai/notebooks/*, not the server) --------------------
+# Phase 0 uses pandas to prove feature parity against the training notebook.
+pandas==2.2.3
+
+# -- later phases (install when the phase starts, not before) --------------
+# scikit-learn==1.6.1       # Phase 5 — Model 1, RandomForestClassifier
+# scipy==1.17.1             # Phase 5 — signal work for the crack engine
+# python-telegram-bot       # Phase 8 — the Telegram alert channel
+# gunicorn                  # Phase 12 — only if serving off the laptop

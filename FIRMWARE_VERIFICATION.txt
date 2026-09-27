@@ -1,0 +1,94 @@
+================================================================================
+FIRMWARE VERIFICATION CHECKLIST — BEFORE FLASHING
+================================================================================
+
+✓ MAIN HUB (main_hub/main.cpp)
+  ├─ Ring Port L1: UART2 (GPIO 17 TX, GPIO 16 RX) — teal wires W1/W2
+  ├─ Ring Port L2: UART1 (GPIO 4 TX, GPIO 13 RX) — orange wires W5/W6
+  ├─ Baud rate: 115200, 8N1
+  └─ Status: READY
+
+✓ LEVEL HUB 1 (level_hub/main.cpp, LEVEL=1)
+  ├─ Port A (MAIN): UART2 (GPIO 17 TX, GPIO 16 RX) — orange wires W1/W2
+  ├─ Port B (L2): UART1 (GPIO 4 TX, GPIO 13 RX) — purple wires W3/W4
+  ├─ Siren GPIO: 14 (active-low, HIGH=silent)
+  ├─ Gate Green: 32 (active-high)
+  ├─ Gate Red: 33 (active-high)
+  ├─ RC522 SDA: GPIO 5, SCK: GPIO 18, MOSI: GPIO 23, MISO: GPIO 19
+  ├─ Boot silence: ENABLED (s_boot_silent = true, blocks siren until first command)
+  ├─ GPIO safe init: YES (gates and siren set to safe state before strips_begin)
+  └─ Status: READY
+
+✓ LEVEL HUB 2 (level_hub/main.cpp, LEVEL=2)
+  ├─ Port A (MAIN): UART2 (GPIO 17 TX, GPIO 16 RX) — teal wires W5/W6
+  ├─ Port B (L1): UART1 (GPIO 4 TX, GPIO 13 RX) — purple wires W3/W4
+  ├─ Siren GPIO: 14 (active-low, HIGH=silent)
+  ├─ Gate Green: 32 (active-high)
+  ├─ Gate Red: 33 (active-high)
+  ├─ RC522 SDA: GPIO 5, SCK: GPIO 18, MOSI: GPIO 23, MISO: GPIO 19
+  ├─ Boot silence: ENABLED (s_boot_silent = true, blocks siren until first command)
+  ├─ GPIO safe init: YES (gates and siren set to safe state before strips_begin)
+  └─ Status: READY
+
+✓ SURFACE NODES 1-4 (node/main.cpp)
+  ├─ Hub MAC (from config.h): 28:05:a5:e2:61:20 (NEW main hub)
+  ├─ NS_HUB_MAC_SET: 1 (ENABLED)
+  ├─ Node 1: NODE_ID=1, Level 1, NO crack column
+  ├─ Node 2: NODE_ID=2, Level 1, YES crack column (HX711 + macro pot)
+  ├─ Node 3: NODE_ID=3, Level 2, NO crack column
+  ├─ Node 4: NODE_ID=4, Level 2, YES crack column (HX711 + macro pot)
+  ├─ ESP-NOW: Channel 1, 2.4 GHz
+  ├─ Heartbeat: 2 Hz sampling, 2s heartbeat
+  └─ Status: READY
+
+✓ COMMON CONFIG (config.h)
+  ├─ Main hub MAC: 28:05:a5:e2:61:20
+  ├─ MAC_SET flag: 1 (enabled)
+  ├─ Schema version: 2
+  ├─ Baud rate: 115200
+  ├─ Sample rate: 2 Hz (NS_SAMPLE_HZ)
+  └─ Status: READY
+
+✓ RING TOPOLOGY (pins.h)
+  ├─ Hop 1 (orange W1/W2): MAIN ↔ L1 via GPIO 17/16 (UART2)
+  ├─ Hop 2 (purple W3/W4): L1 ↔ L2 via GPIO 4/13 (UART1) [W4 has cut switch]
+  ├─ Hop 3 (teal W5/W6): MAIN ↔ L2 via GPIO 4/13 (UART1) [MAIN side]
+  ├─ No GPIO 25/26 used (reserved for deferred GPS)
+  ├─ All three boards use same GPIO 4,13,16,17 (two independent UARTs each)
+  └─ Status: VERIFIED & CORRECT
+
+================================================================================
+HARDWARE VERIFICATION CHECKLIST
+================================================================================
+
+LEVEL HUB 2 Resolder Verification:
+  ☐ Purple wires (Hop 2, W3/W4) now soldered to GPIO 4 and GPIO 13 (NOT 25/26)
+  ☐ Continuity test passed with DMM on GPIO 4 and GPIO 13 connections
+  ☐ Orange wires (Hop 3, W5/W6) still on GPIO 17 and GPIO 16
+  ☐ No cold solder joints observed
+
+Ring Cable Verification:
+  ☐ W1 (orange): MAIN GPIO 17 ↔ L1 GPIO 16
+  ☐ W2 (orange): L1 GPIO 17 ↔ MAIN GPIO 16
+  ☐ W3 (purple): L1 GPIO 4 ↔ L2 GPIO 13
+  ☐ W4 (purple): L2 GPIO 4 ↔ L1 GPIO 13 [HAS CUT SWITCH]
+  ☐ W5 (teal): L2 GPIO 17 ↔ MAIN GPIO 13
+  ☐ W6 (teal): MAIN GPIO 4 ↔ L2 GPIO 16
+  ☐ GND (black): Common ground on all three boards
+
+================================================================================
+FLASHING SEQUENCE
+================================================================================
+
+Order (recommended):
+  1. MAIN HUB (env:main_hub) — master reference
+  2. LEVEL HUB 1 (env:level_hub, -DLEVEL=1)
+  3. LEVEL HUB 2 (env:level_hub, -DLEVEL=2)
+  4. NODE 1 (env:node, -DNODE_ID=1)
+  5. NODE 2 (env:node_crack, -DNODE_ID=2)
+  6. NODE 3 (env:node, -DNODE_ID=3)
+  7. NODE 4 (env:node_crack, -DNODE_ID=4)
+
+After each flash: Check serial monitor for boot message, verify no ring faults
+
+================================================================================

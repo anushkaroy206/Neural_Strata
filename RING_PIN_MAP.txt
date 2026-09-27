@@ -1,0 +1,75 @@
+================================================================================
+NEURAL STRATA — RING GPIO PIN CONNECTIONS (Definitive)
+================================================================================
+
+The ring is a triangle: MAIN ↔ L1 ↔ L2 (with MAIN ↔ L2 direct leg)
+
+Three segments:
+  • Hop 1 (orange): MAIN ↔ L1   (W1/W2)
+  • Hop 2 (purple): L1 ↔ L2     (W3/W4) — W4 has the cut switch
+  • Hop 3 (teal):   MAIN ↔ L2   (W5/W6)
+
+================================================================================
+MAIN HUB (UART2 for L1, UART1 for L2)
+================================================================================
+
+Port to L1 (Hop 1, orange, W1/W2):
+  TX: GPIO 17 (UART2 TX) — W1 from MAIN to L1
+  RX: GPIO 16 (UART2 RX) — W2 from L1 to MAIN
+
+Port to L2 (Hop 3, teal, W5/W6):
+  TX: GPIO 4  (UART1 TX) — W6 from MAIN to L2
+  RX: GPIO 13 (UART1 RX) — W5 from L2 to MAIN
+
+================================================================================
+LEVEL HUB 1 (L1) — (UART2 for MAIN, UART1 for L2)
+================================================================================
+
+Port A to MAIN (Hop 1, orange, W2/W1):
+  TX: GPIO 17 (UART2 TX) — W2 from L1 to MAIN
+  RX: GPIO 16 (UART2 RX) — W1 from MAIN to L1
+
+Port B to L2 (Hop 2, purple, W3/W4):
+  TX: GPIO 4  (UART1 TX) — W3 from L1 to L2
+  RX: GPIO 13 (UART1 RX) — W4 from L2 to L1
+
+================================================================================
+LEVEL HUB 2 (L2) — (UART2 for MAIN, UART1 for L1)
+================================================================================
+
+Port A to MAIN (Hop 3, teal, W6/W5):
+  TX: GPIO 17 (UART2 TX) — W6 from L2 to MAIN
+  RX: GPIO 16 (UART2 RX) — W5 from MAIN to L2
+
+Port B to L1 (Hop 2, purple, W4/W3):
+  TX: GPIO 4  (UART1 TX) — W4 from L2 to L1
+  RX: GPIO 13 (UART1 RX) — W3 from L1 to L2
+
+================================================================================
+WIRE COLORS AND LABELS (on the actual cables)
+================================================================================
+
+W1 (orange):  MAIN GPIO17 TX → L1 GPIO16 RX
+W2 (orange):  L1 GPIO17 TX → MAIN GPIO16 RX
+W3 (purple):  L1 GPIO4 TX → L2 GPIO13 RX
+W4 (purple):  L2 GPIO4 TX → L1 GPIO13 RX  ← HAS THE CUT SWITCH
+W5 (teal):    L2 GPIO17 TX → MAIN GPIO13 RX
+W6 (teal):    MAIN GPIO4 TX → L2 GPIO16 RX
+
+================================================================================
+KEY FACTS
+================================================================================
+
+• **GPIO 17 and 16 appear on ALL THREE boards** (always paired for UART2)
+  - This is Port A on Level Hubs, and L1 port on MAIN
+  - Always talks to MAIN (or to the "primary" peer)
+
+• **GPIO 4 and 13 appear on ALL THREE boards** (always paired for UART1)
+  - This is Port B on Level Hubs (cross-link L1↔L2)
+  - This is L2 port on MAIN (to Level Hub 2)
+
+• **NO GPIO 25/26 in the ring** — those are reserved for deferred GPS
+
+• **Baud rate**: 115200 on all connections
+
+================================================================================

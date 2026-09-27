@@ -1,0 +1,17 @@
+{
+  "name": "neural-strata-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Neural Strata \u2014 slope-stability, underground evacuation and blackbox/cloud-sync control-room dashboard (frontend)",
+  "scripts": {
+    "dev": "node mock/server.js --root=src",
+    "start": "node mock/server.js",
+    "serve": "node mock/server.js --no-api",
+    "check": "node tools/check.js",
+    "build": "node tools/build-single.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "UNLICENSED"
+}

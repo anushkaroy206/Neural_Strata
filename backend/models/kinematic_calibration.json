@@ -1,0 +1,20 @@
+{
+  "method": "Fukuzono-Voight Inverse Velocity Kinematic Law",
+  "alpha_exponent": 1.95,
+  "a_coefficient": 0.082,
+  "breach_limit_mm": 100.0,
+  "steady_creep_velocity_threshold_mm_s": 0.05,
+  "stable_ttf_clamp_s": 3600.0,
+  "calibration_basis": "Empirical open-pit mining failure curves & laboratory drill simulation",
+  "provenance": {
+    "kind": "literature",
+    "literature_alpha_range": "1.5 <= alpha <= 2.2 (brittle rock)",
+    "citation": "Fukuzono (1985); Voight (1988)",
+    "fit_attempt": {
+      "dataset": "drill_dataset.csv",
+      "attempted": true,
+      "usable": false,
+      "error": "KeyError: 't_s'"
+    }
+  }
+}

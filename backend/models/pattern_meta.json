@@ -1,0 +1,215 @@
+{
+  "model": "pattern_model_v1",
+  "algorithm": "sklearn.ensemble.RandomForestClassifier",
+  "trained_at": "2026-09-23T19:16:39+00:00",
+  "dataset": "ai/datasets/pattern_dataset.csv",
+  "n_windows": 43092,
+  "n_runs": 420,
+  "n_train": 26370,
+  "n_val": 8514,
+  "n_test": 8208,
+  "features": [
+    "disp_now",
+    "d10",
+    "d30",
+    "d60",
+    "v10",
+    "v30",
+    "v60",
+    "disp_max60",
+    "accel_now",
+    "accel_mean60",
+    "accel_std60",
+    "accel_max60",
+    "jerk",
+    "tilt_now",
+    "tilt_d30",
+    "ttf_fuk",
+    "vib_count_60",
+    "vib_rate_10",
+    "micro_rate",
+    "micro_z",
+    "macro_d30",
+    "macro_total",
+    "cross_sensor_coherence",
+    "recovery_ratio",
+    "excursion_duration_s",
+    "impulse_periodicity",
+    "zero_cross_rate",
+    "settlement_ratio",
+    "spatial_coherence",
+    "spatial_decay",
+    "n_active_anomalous",
+    "tilt_acc_coupling"
+  ],
+  "disruption_features": [
+    "vib_count_60",
+    "vib_rate_10",
+    "micro_rate",
+    "micro_z",
+    "macro_d30",
+    "macro_total",
+    "cross_sensor_coherence",
+    "recovery_ratio",
+    "excursion_duration_s",
+    "impulse_periodicity",
+    "zero_cross_rate",
+    "settlement_ratio",
+    "spatial_coherence",
+    "spatial_decay",
+    "n_active_anomalous",
+    "tilt_acc_coupling"
+  ],
+  "classes": [
+    "QUIET",
+    "ENVIRONMENTAL",
+    "STRUCTURAL",
+    "UNKNOWN"
+  ],
+  "target": "primary",
+  "split": {
+    "method": "GroupShuffleSplit by run_id, 60/20/20",
+    "rationale": "overlapping 60 s windows make a row split leak the same event"
+  },
+  "missing_value_sentinel": -999.0,
+  "operating_threshold": 0.05,
+  "calibration": {
+    "target": "STRUCTURAL recall \u2265 0.98",
+    "achieved_recall": 1.0,
+    "achieved_precision": 1.0,
+    "selected_on": "validation",
+    "reported_on": "test"
+  },
+  "metrics": {
+    "macro_f1": 0.9973934043175773,
+    "quiet_fp_rate": 0.0,
+    "env_suppression_precision": 1.0,
+    "per_class_recall": {
+      "QUIET": 1.0,
+      "ENVIRONMENTAL": 0.9932909604519774,
+      "STRUCTURAL": 1.0,
+      "UNKNOWN": 1.0
+    },
+    "per_class_precision": {
+      "QUIET": 0.9859778597785978,
+      "ENVIRONMENTAL": 1.0,
+      "STRUCTURAL": 1.0,
+      "UNKNOWN": 1.0
+    }
+  },
+  "confusion_matrix": {
+    "labels": [
+      "QUIET",
+      "ENVIRONMENTAL",
+      "STRUCTURAL",
+      "UNKNOWN"
+    ],
+    "matrix": [
+      [
+        1336,
+        0,
+        0,
+        0
+      ],
+      [
+        19,
+        2813,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        2960,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        1080
+      ]
+    ]
+  },
+  "feature_importances": [
+    0.08620280536886504,
+    0.0009716286002848041,
+    0.026306443524387588,
+    0.125596981073023,
+    0.00044804497238892565,
+    0.037987613756003756,
+    0.13919413962994812,
+    0.02807783973697931,
+    0.00589359699997653,
+    0.020951059247274244,
+    0.06141440503389801,
+    0.10117523785715192,
+    0.003235089845133842,
+    0.014252040150950437,
+    0.008590343403038178,
+    9.708768741992799e-05,
+    0.018283905902767978,
+    0.020348381561400834,
+    0.00973731923554464,
+    0.02044653315294102,
+    0.018189068514127164,
+    0.021031649137915033,
+    0.0049648183232717065,
+    0.09585885932001362,
+    0.0022222700447532256,
+    0.0025574854812320117,
+    0.053481086938525484,
+    0.01429281468223418,
+    0.0022795782550423934,
+    0.04583398859436341,
+    0.0006957844963581793,
+    0.009382099472785475
+  ],
+  "core16_importance_share": 0.6603943568867237,
+  "top_features": [
+    [
+      "v60",
+      0.13919413962994812
+    ],
+    [
+      "d60",
+      0.125596981073023
+    ],
+    [
+      "accel_max60",
+      0.10117523785715192
+    ],
+    [
+      "recovery_ratio",
+      0.09585885932001362
+    ],
+    [
+      "disp_now",
+      0.08620280536886504
+    ],
+    [
+      "accel_std60",
+      0.06141440503389801
+    ],
+    [
+      "zero_cross_rate",
+      0.053481086938525484
+    ],
+    [
+      "spatial_decay",
+      0.04583398859436341
+    ]
+  ],
+  "hyperparameters": {
+    "n_estimators": 200,
+    "max_depth": 8,
+    "min_samples_leaf": 4,
+    "class_weight": "balanced_subsample",
+    "n_jobs": -1,
+    "random_state": 42
+  },
+  "latency_ms_per_window": 0.0804999999672873,
+  "latency_ms_sklearn_predict_proba": 3.3711731250514276,
+  "fast_path_max_abs_diff_vs_sklearn": 4.440892098500626e-16,
+  "fit_seconds": 0.4830383329826873
+}

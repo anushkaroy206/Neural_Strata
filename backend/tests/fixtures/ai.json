@@ -1,0 +1,1 @@
+{"confidence":"100%","forecasts":{"node_1":false,"node_2":false},"horizon":"1 Hour","last_train":"2026-08-25T21:41:33+00:00","model":"ttf_model_v1","note":"Warming up: building the 60 s telemetry buffer.","status":"WARMING UP"}

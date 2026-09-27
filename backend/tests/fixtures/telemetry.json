@@ -1,0 +1,1 @@
+{"nodes":{"node_1":{"acceleration":0.0,"displacement_mm":5.0,"status":"NOMINAL","tilt_x":0.0},"node_2":{"acceleration":0.0,"displacement_mm":5.0,"status":"NOMINAL","tilt_x":0.0}},"rfid_log":[],"system_status":"NOMINAL","timestamp":"2026-09-21T19:48:21.483Z","ttf_seconds":"N/A","underground":{"route_A_status":"OPEN","route_B_status":"OPEN"}}

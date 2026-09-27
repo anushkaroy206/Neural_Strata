@@ -1,0 +1,48 @@
+=== NEURAL STRATA — TRAINING REPORT (Phase 4.3, v2 split) ===
+generated:   2026-09-24 00:43:23
+dataset:     /Users/mohneeshpurohit/Documents/GitHub/Neural_Strata/ai/datasets/drill_dataset.csv  (165173 windows)
+split:       1 held-out critical run (out-of-run) + 1 validation critical run; warning-run rows trained on and evaluated (in-sample, disclosed)
+model:       XGB 400 trees max, depth 4, lr 0.05, breach weight 5.0x, early-stop @ 264
+
+--- TTF regression (seconds) ---
+HELD-OUT critical run (true out-of-run):  MAE  24.45 s   RMSE  50.57 s   (n=55)
+warning slow-creep (in-sample*):            MAE 487.41 s   RMSE 1059.21 s   (n=2609)
+stable windows in test:                     n/a
+overall test set:                           MAE 477.86 s   RMSE 1048.25 s   (n=2664)
+* only a few slow-creep runs exist in the dataset, so those rows were
+  also used in training; live warning drills re-run the identical injection
+  function, so this figure is representative of demo behaviour.
+
+--- Binary: 'breach within 300 s' (test set) ---
+accuracy 0.750   precision 1.000   recall 0.750
+
+--- Phase 5 quantile trio (band) ---
+quantiles:                    0.10, 0.50, 0.90
+monotone constraints:         (-1,0,0,0,-1,-1,0,0,0,0,0,0,0,0,0,0)   (order = FEATURES)
+80% interval coverage:         85.1 %   (nominal 80%)
+median (q50) MAE:             861.85 s
+band width q90-q10:           median  531.58 s   p90  3599.53 s
+quantile crossings:           25 before sort, 0 after
+monotonicity violations:      0 on 200 probes
+
+A band is only worth printing if it is calibrated, so coverage is the
+headline: an 80% interval that contains 80% of held-out truth is
+informative; one that contains everything is a shrug.
+
+--- Feature importance (gain) ---
+ 1. disp_now       4576643584.0
+ 2. tilt_now        397503904.0
+ 3. accel_std60     320688512.0
+ 4. disp_max60      295513760.0
+ 5. accel_max60     171393440.0
+ 6. d60             132654872.0
+ 7. v30             129732112.0
+ 8. v60              99752160.0
+ 9. d30              83823864.0
+10. accel_mean60     64544860.0
+11. tilt_d30         37176720.0
+12. d10              17580892.0
+13. accel_now        17338422.0
+14. ttf_fuk          16980198.0
+15. v10              13331466.0
+16. jerk              6418800.0

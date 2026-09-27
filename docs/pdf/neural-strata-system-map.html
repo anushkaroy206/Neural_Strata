@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Neural Strata — System Connection &amp; Operation Map</title>
+<style>
+  :root { --navy:#1F4E79; --blue:#2E74B5; --ink:#333; --gray:#7A8794; --line:#C9DFF2; }
+  * { box-sizing: border-box; }
+  body { font-family: Calibri, "Segoe UI", Arial, sans-serif; color: var(--ink); margin: 0; background: #fff; }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 24px 28px 60px; }
+  header.top { background: var(--navy); color: #fff; padding: 18px 28px; }
+  header.top h1 { margin: 0; font-size: 22px; letter-spacing: .5px; }
+  header.top p { margin: 4px 0 0; font-size: 12px; color: #A9C4E0; }
+  h2 { color: var(--navy); font-size: 19px; border-bottom: 2.5px solid var(--blue); padding-bottom: 6px; margin: 38px 0 14px; }
+  h3 { color: var(--blue); font-size: 14.5px; margin: 20px 0 8px; }
+  p, li { font-size: 13.5px; line-height: 1.55; }
+  .card { border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; margin: 12px 0; background: #FBFDFF; }
+  .case { border: 1px solid var(--line); border-left: 5px solid var(--blue); border-radius: 8px; padding: 14px 16px; margin: 16px 0; background: #fff; }
+  .case h3 { margin-top: 0; color: var(--navy); font-size: 15px; }
+  .case.dead { border-left-color: #C0392B; }
+  .case.heal { border-left-color: #1E8E5A; }
+  .tag { display:inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: .8px; padding: 2px 8px; border-radius: 10px; vertical-align: middle; }
+  .tag.fail { background: #FDECEA; color: #C0392B; }
+  .tag.heal { background: #E8F6EF; color: #1E8E5A; }
+  .tag.info { background: #EAF2FA; color: var(--blue); }
+  table { border-collapse: collapse; width: 100%; margin: 10px 0 16px; font-size: 12.5px; }
+  th { background: var(--blue); color: #fff; text-align: left; padding: 6px 9px; font-size: 12px; }
+  td { border: 1px solid var(--line); padding: 5px 9px; vertical-align: top; }
+  tbody tr:nth-child(even) td { background: #F2F7FB; }
+  code, pre { font-family: Consolas, "DejaVu Sans Mono", monospace; }
+  code { background: #F2F2F2; padding: 1px 5px; border-radius: 3px; font-size: 12px; }
+  pre { background: #F2F2F2; border-radius: 4px; padding: 10px 12px; font-size: 12px; line-height: 1.5; overflow-x: auto; }
+  .dash { background: #10263B; color: #CFE3F3; border-radius: 6px; padding: 10px 12px; font-family: Consolas, monospace; font-size: 12px; margin-top: 10px; }
+  .dash b { color: #fff; }
+  .dash .ok { color: #7BE3A5; } .dash .warn { color: #FFD37A; } .dash .err { color: #FF8A7A; }
+  .grid2 { display: flex; gap: 16px; flex-wrap: wrap; }
+  .grid2 > div { flex: 1 1 340px; }
+  svg { display: block; max-width: 100%; height: auto; margin: 8px auto; }
+  .flow { stroke-dasharray: 6 6; animation: dash 1.1s linear infinite; }
+  @keyframes dash { to { stroke-dashoffset: -12; } }
+  .legend-note { font-size: 11.5px; color: var(--gray); margin: 4px 0 0; }
+  .step { margin: 0 0 8px; padding-left: 4px; }
+  .num { display:inline-block; background: var(--navy); color:#fff; border-radius: 50%; width: 20px; height: 20px; text-align:center; font-size: 12px; font-weight: 700; line-height: 20px; margin-right: 8px; }
+  footer { margin-top: 40px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 11.5px; color: var(--gray); }
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>NEURAL STRATA — System Connection &amp; Operation Map (v2 upgrade)</h1>
+  <p>4-node self-healing surface mesh · 2-level underground with ring backbone · edge AI (XGBoost TTF + kinematic fallback) · every failure case drawn</p>
+</header>
+<div class="wrap">
+
+<!-- ============================================================ 1. FULL SYSTEM -->
+<h2>1. The Whole System — one picture</h2>
+<p>Four surface sensor nodes talk wirelessly (ESP-NOW) to the <b>Main Hub</b>. The Main Hub is the single bridge: USB serial up to the laptop, and a <b>wired ring backbone</b> down into the mine to the two <b>Level Hubs</b> (your “servant hubs”), each driving 2 junction LED strips, 1 RFID gate and 1 siren.</p>
+
+<svg viewBox="0 0 980 790" xmlns="http://www.w3.org/2000/svg" font-family="Calibri, Arial, sans-serif">
+  <defs>
+    <marker id="aB" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#2E74B5"/></marker>
+    <marker id="aG" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#1E8E5A"/></marker>
+    <marker id="aR" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#C0392B"/></marker>
+    <marker id="aO" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#E8862D"/></marker>
+    <marker id="aT" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#2AA8A0"/></marker>
+    <marker id="aP" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#8E5AC8"/></marker>
+  </defs>
+
+  <!-- surface panel -->
+  <rect x="20" y="18" width="580" height="330" rx="10" fill="#F5F9FD" stroke="#BDD7EE"/>
+  <text x="34" y="42" font-size="13" font-weight="700" fill="#1F4E79">SURFACE — 4-NODE MESH (ESP-NOW, Wi-Fi P2P)</text>
+
+  <!-- ring edges (wireless) -->
+  <g stroke="#5B9BD5" stroke-width="2" stroke-dasharray="7 5" class="flow" fill="none">
+    <line x1="134" y1="112" x2="406" y2="112"/>
+    <line x1="430" y1="136" x2="430" y2="246"/>
+    <line x1="406" y1="270" x2="134" y2="270"/>
+    <line x1="110" y1="136" x2="110" y2="246"/>
+  </g>
+  <!-- spokes -->
+  <g stroke="#8FB8DC" stroke-width="1.8" stroke-dasharray="5 5" fill="none">
+    <line x1="110" y1="112" x2="280" y2="192"/>
+    <line x1="430" y1="112" x2="280" y2="192"/>
+    <line x1="430" y1="270" x2="280" y2="192"/>
+    <line x1="110" y1="270" x2="280" y2="192"/>
+  </g>
+
+  <!-- nodes -->
+  <g>
+    <g><circle cx="110" cy="112" r="24" fill="#EAF2FA" stroke="#2E74B5" stroke-width="2.5"/><line x1="110" y1="88" x2="110" y2="76" stroke="#2E74B5" stroke-width="2"/><circle cx="110" cy="74" r="2.5" fill="#2E74B5"/><text x="110" y="117" text-anchor="middle" font-size="13" font-weight="700" fill="#1F4E79">N1</text></g>
+    <g><circle cx="430" cy="112" r="24" fill="#EAF2FA" stroke="#2E74B5" stroke-width="2.5"/><line x1="430" y1="88" x2="430" y2="76" stroke="#2E74B5" stroke-width="2"/><circle cx="430" cy="74" r="2.5" fill="#2E74B5"/><text x="430" y="117" text-anchor="middle" font-size="13" font-weight="700" fill="#1F4E79">N2</text></g>
+    <g><circle cx="430" cy="270" r="24" fill="#EAF2FA" stroke="#2E74B5" stroke-width="2.5"/><line x1="430" y1="246" x2="430" y2="234" stroke="#2E74B5" stroke-width="2"/><circle cx="430" cy="232" r="2.5" fill="#2E74B5"/><text x="430" y="275" text-anchor="middle" font-size="13" font-weight="700" fill="#1F4E79">N3</text></g>
+    <g><circle cx="110" cy="270" r="24" fill="#EAF2FA" stroke="#2E74B5" stroke-width="2.5"/><line x1="110" y1="246" x2="110" y2="234" stroke="#2E74B5" stroke-width="2"/><circle cx="110" cy="232" r="2.5" fill="#2E74B5"/><text x="110" y="275" text-anchor="middle" font-size="13" font-weight="700" fill="#1F4E79">N4</text></g>
+  </g>
+  <text x="160" y="105" font-size="10" fill="#5A6672">ring (each node hears its 2 neighbours)</text>
+  <text x="60" y="238" font-size="10" fill="#5A6672">spokes (direct to hub)</text>
+  <text x="60" y="318" font-size="10" fill="#5A6672">Each node: ESP32 + MPU-6050 (tilt+vibration) + slide pot (crack width) · 2 Hz JSON + seq number</text>
+  <text x="60" y="332" font-size="10" fill="#5A6672">N4 also carries an SX1278 → LoRa 433 MHz range-proof link (optional)</text>
+
+  <!-- main hub -->
+  <rect x="215" y="163" width="130" height="58" rx="8" fill="#1F4E79"/>
+  <text x="280" y="187" text-anchor="middle" font-size="12.5" font-weight="700" fill="#fff">MAIN HUB</text>
+  <text x="280" y="203" text-anchor="middle" font-size="10" fill="#A9C4E0">ESP32 gateway · aggregates</text>
+
+  <!-- USB to laptop -->
+  <line x1="345" y1="192" x2="655" y2="192" stroke="#8A97A5" stroke-width="3.5"/>
+  <text x="500" y="184" text-anchor="middle" font-size="11" font-weight="700" fill="#5A6672">USB serial 115200 · JSON lines @ 2 Hz (telemetry + RFID)</text>
+
+  <!-- laptop -->
+  <rect x="655" y="120" width="295" height="100" rx="8" fill="#fff" stroke="#1F4E79" stroke-width="2"/>
+  <text x="668" y="142" font-size="12" font-weight="700" fill="#1F4E79">LAPTOP (Mac) — Flask edge server</text>
+  <text x="668" y="160" font-size="10.5" fill="#444">• status logic (NOMINAL / WARNING / CRITICAL)</text>
+  <text x="668" y="175" font-size="10.5" fill="#444">• XGBoost TTF model @ 1 Hz  (+ kinematic fallback)</text>
+  <text x="668" y="190" font-size="10.5" fill="#444">• scenario console (drills)  • alert engine (email/SMS)</text>
+  <text x="668" y="205" font-size="10.5" fill="#444">• /api/telemetry · /api/extended · /api/ai · /api/history</text>
+
+  <!-- dashboard + db -->
+  <rect x="655" y="255" width="170" height="66" rx="8" fill="#EAF2FA" stroke="#2E74B5" stroke-width="1.5"/>
+  <text x="740" y="278" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1F4E79">DASHBOARD</text>
+  <text x="740" y="294" text-anchor="middle" font-size="10" fill="#444">browser · 500 ms polling</text>
+  <text x="740" y="308" text-anchor="middle" font-size="10" fill="#444">mobile-responsive</text>
+  <line x1="740" y1="220" x2="740" y2="255" stroke="#2E74B5" stroke-width="2" marker-end="url(#aB)"/>
+  <ellipse cx="905" cy="262" rx="30" ry="9" fill="#fff" stroke="#1F4E79" stroke-width="1.5"/>
+  <path d="M 875 262 V 316 A 30 9 0 0 0 935 316 V 262" fill="#F5F9FD" stroke="#1F4E79" stroke-width="1.5"/>
+  <ellipse cx="905" cy="316" rx="30" ry="9" fill="#F5F9FD" stroke="#1F4E79" stroke-width="1.5"/>
+  <text x="905" y="295" text-anchor="middle" font-size="9.5" fill="#1F4E79" font-weight="700">PostgreSQL</text>
+  <line x1="940" y1="192" x2="922" y2="252" stroke="#2E74B5" stroke-width="2" marker-end="url(#aB)"/>
+  <text x="952" y="228" font-size="9.5" fill="#5A6672">2 Hz rows</text>
+
+  <!-- underground -->
+  <text x="34" y="386" font-size="13" font-weight="700" fill="#1F4E79">UNDERGROUND — 2 LEVELS · 4 JUNCTIONS · WIRED RING BACKBONE (UART 3.3 V)</text>
+
+  <!-- ring wires -->
+  <path d="M 280 221 L 280 350 L 485 350 L 485 428" fill="none" stroke="#E8862D" stroke-width="4" marker-end="url(#aO)"/>
+  <text x="292" y="344" font-size="10.5" font-weight="700" fill="#E8862D">hop 1 (UART1)</text>
+  <line x1="485" y1="489" x2="485" y2="598" stroke="#8E5AC8" stroke-width="4" marker-end="url(#aP)"/>
+  <text x="497" y="548" font-size="10.5" font-weight="700" fill="#8E5AC8">hop 2 (UART2)</text>
+  <path d="M 420 629 L 160 629 L 160 192 L 213 192" fill="none" stroke="#2AA8A0" stroke-width="4" marker-end="url(#aT)"/>
+  <text x="172" y="622" font-size="10.5" font-weight="700" fill="#2AA8A0">hop 3 (UART2→UART1)</text>
+
+  <!-- cut switch on hop 2 -->
+  <rect x="471" y="528" width="28" height="20" rx="4" fill="#fff" stroke="#C0392B" stroke-width="2"/>
+  <line x1="476" y1="543" x2="494" y2="533" stroke="#C0392B" stroke-width="3"/>
+  <text x="505" y="524" font-size="10" fill="#C0392B" font-weight="700">DEMO: cut switch (toggle = “wire broken”)</text>
+
+  <!-- level bands -->
+  <rect x="20" y="398" width="940" height="132" rx="10" fill="#FDF9F3" stroke="#E4D5C2" stroke-dasharray="6 4"/>
+  <text x="34" y="420" font-size="12" font-weight="700" fill="#8A6D3B">LEVEL 1</text>
+  <rect x="20" y="568" width="940" height="132" rx="10" fill="#F3F7FB" stroke="#B9C9DA" stroke-dasharray="6 4"/>
+  <text x="34" y="590" font-size="12" font-weight="700" fill="#41618A">LEVEL 2</text>
+
+  <!-- L1 hub -->
+  <rect x="420" y="430" width="130" height="58" rx="8" fill="#1F4E79"/>
+  <text x="485" y="454" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">LEVEL-1 HUB</text>
+  <text x="485" y="470" text-anchor="middle" font-size="9.5" fill="#A9C4E0">ESP32 · RFID · siren</text>
+  <!-- L2 hub -->
+  <rect x="420" y="600" width="130" height="58" rx="8" fill="#1F4E79"/>
+  <text x="485" y="624" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">LEVEL-2 HUB</text>
+  <text x="485" y="640" text-anchor="middle" font-size="9.5" fill="#A9C4E0">ESP32 · RFID · siren</text>
+
+  <!-- junctions L1 -->
+  <rect x="110" y="448" width="120" height="12" rx="3" fill="#63C28A"/>
+  <text x="110" y="442" font-size="10" fill="#1E8E5A" font-weight="700">Junction A1 — route A (LED strip)</text>
+  <rect x="750" y="448" width="120" height="12" rx="3" fill="#63C28A"/>
+  <text x="750" y="442" font-size="10" fill="#1E8E5A" font-weight="700">Junction B1 — route B (LED strip)</text>
+  <line x1="420" y1="460" x2="230" y2="455" stroke="#1E8E5A" stroke-width="2" marker-end="url(#aG)"/>
+  <line x1="550" y1="460" x2="750" y2="455" stroke="#1E8E5A" stroke-width="2" marker-end="url(#aG)"/>
+  <!-- junctions L2 -->
+  <rect x="110" y="618" width="120" height="12" rx="3" fill="#63C28A"/>
+  <text x="110" y="612" font-size="10" fill="#1E8E5A" font-weight="700">Junction A2 — route A (LED strip)</text>
+  <rect x="750" y="618" width="120" height="12" rx="3" fill="#63C28A"/>
+  <text x="750" y="612" font-size="10" fill="#1E8E5A" font-weight="700">Junction B2 — route B (LED strip)</text>
+  <line x1="420" y1="630" x2="230" y2="625" stroke="#1E8E5A" stroke-width="2" marker-end="url(#aG)"/>
+  <line x1="550" y1="630" x2="750" y2="625" stroke="#1E8E5A" stroke-width="2" marker-end="url(#aG)"/>
+
+  <!-- RFID + siren icons -->
+  <g font-size="9.5" fill="#444">
+    <rect x="590" y="440" width="52" height="26" rx="4" fill="#fff" stroke="#2E74B5" stroke-width="1.5"/><text x="616" y="457" text-anchor="middle" font-weight="700" fill="#2E74B5">RFID L1</text>
+    <rect x="590" y="610" width="52" height="26" rx="4" fill="#fff" stroke="#2E74B5" stroke-width="1.5"/><text x="616" y="627" text-anchor="middle" font-weight="700" fill="#2E74B5">RFID L2</text>
+    <circle cx="398" cy="465" r="11" fill="#fff" stroke="#E8862D" stroke-width="2"/><text x="398" y="469" text-anchor="middle" font-size="9" font-weight="700" fill="#E8862D">♪</text>
+    <circle cx="398" cy="635" r="11" fill="#fff" stroke="#E8862D" stroke-width="2"/><text x="398" y="639" text-anchor="middle" font-size="9" font-weight="700" fill="#E8862D">♪</text>
+  </g>
+  <text x="650" y="472" font-size="9.5" fill="#5A6672">swipes go UP the ring to the server</text>
+  <text x="352" y="500" font-size="9.5" fill="#5A6672">siren</text>
+
+  <!-- flow labels on ring -->
+  <text x="300" y="392" font-size="10" font-weight="700" fill="#1E8E5A">▼ alerts down</text>
+  <text x="352" y="418" font-size="10" font-weight="700" fill="#2E74B5">▲ RFID up</text>
+  <text x="60" y="186" font-size="10" font-weight="700" fill="#2E74B5" transform="rotate(-90 60 186)">telemetry ▲</text>
+
+  <!-- legend -->
+  <rect x="20" y="716" width="940" height="64" rx="8" fill="#F5F9FD" stroke="#BDD7EE"/>
+  <text x="34" y="736" font-size="11" font-weight="700" fill="#1F4E79">LEGEND</text>
+  <line x1="34" y1="752" x2="74" y2="752" stroke="#5B9BD5" stroke-width="2.5" stroke-dasharray="7 5"/><text x="80" y="756" font-size="10.5" fill="#444">ESP-NOW (wireless, no wires)</text>
+  <line x1="250" y1="752" x2="290" y2="752" stroke="#8A97A5" stroke-width="3.5"/><text x="296" y="756" font-size="10.5" fill="#444">USB serial (hub→laptop)</text>
+  <line x1="450" y1="752" x2="490" y2="752" stroke="#E8862D" stroke-width="4"/><text x="496" y="756" font-size="10.5" fill="#444">ring hop 1</text>
+  <line x1="575" y1="752" x2="615" y2="752" stroke="#8E5AC8" stroke-width="4"/><text x="621" y="756" font-size="10.5" fill="#444">hop 2</text>
+  <line x1="675" y1="752" x2="715" y2="752" stroke="#2AA8A0" stroke-width="4"/><text x="721" y="756" font-size="10.5" fill="#444">hop 3</text>
+  <line x1="785" y1="752" x2="825" y2="752" stroke="#1E8E5A" stroke-width="2.5"/><text x="831" y="756" font-size="10.5" fill="#444">alert / LED command</text>
+  <line x1="34" y1="772" x2="74" y2="772" stroke="#2E74B5" stroke-width="2.5" marker-end="url(#aB)"/><text x="80" y="776" font-size="10.5" fill="#444">telemetry / RFID uplink</text>
+</svg>
+<p class="legend-note">Everything wireless is dashed blue (no wires). The only <b>wires</b> are: USB (hub→laptop), the 3 ring hops, and each board’s own power. All logic levels are 3.3 V — no converters anywhere.</p>
+
+<h3>Where each board lives — allocation &amp; physical routing (Option A: full 3-hub ring)</h3>
+<table>
+  <tr><th>Board</th><th>Source</th><th>Location in diorama</th><th>Carries</th></tr>
+  <tr><td>N1–N4 (4× ESP32)</td><td>2 existing + 2 new</td><td>4 corners of the surface panel, on monument stands</td><td>MPU-6050 + slide pot; ESP-NOW only — no other wires than power</td></tr>
+  <tr><td><b>Main Hub</b></td><td><b>existing hub, repurposed</b></td><td>Surface level, centre of the node square; USB cable runs up/back to the laptop</td><td>ESP-NOW RX ×4 nodes · USB uplink · ring port A (UART1) · ring port B (UART2) · optional SX1278 RX (shares SPI, own CS pin)</td></tr>
+  <tr><td><b>Level-1 Hub</b> (new)</td><td>new ESP32</td><td>Middle level (Level 1 tunnel), near its 2 junction strips + RFID gate</td><td>ring A + ring B · RC522 · 2× WS2812 strips · siren</td></tr>
+  <tr><td><b>Level-2 Hub</b> (new)</td><td>new ESP32</td><td>Bottom level (Level 2 tunnel), same layout as L1</td><td>same as L1</td></tr>
+</table>
+<p><b>Physical routing of the 7 wires:</b> hop 1 (orange) runs down the <b>back-left</b> edge of the cardboard, hop 2 (purple) down the <b>back-centre</b>, hop 3 (teal) up the <b>back-right</b>, closing the loop at the Main Hub. The black GND bus joins all three hubs + the USB-hub GND. Mount the hop-2 <b>cut switch on a small hinged “service panel”</b> on the front — judges flip a labelled switch, it looks intentional, and the wiring stays hidden.</p>
+<div class="card">
+<b>Scope options (choose one):</b><br>
+<b>A — full 3-hub ring (recommended):</b> 4 new ESP32s (2 nodes + 2 level hubs), 2 new RC522s. Cut-wire demo = <i>ring heals, both levels stay live</i>. Core ≈ ₹9.5 k.<br>
+<b>B — one level hub only:</b> 3 new ESP32s. Main↔L1L2 becomes a <i>chain</i>, not a ring — a cut wire just isolates L2 (detection demo only, no heal). Core ≈ ₹8.6 k.<br>
+<b>C — skip the 2nd level:</b> keep the current single tunnel hub; no ring at all. Core ≈ ₹7 k.<br>
+<em>Why A: the ~₹900 delta buys the best underground demo moment; the Main Hub change is small (two UART listeners on the board that already works).</em>
+</div>
+
+<!-- ============================================================ 2. WIRING -->
+<h2>2. Exact Wiring (what goes where)</h2>
+
+<h3>2.1 One surface node (N1–N4 — all identical)</h3>
+<table>
+  <tr><th>Wire</th><th>From</th><th>To</th><th>Color (suggested)</th></tr>
+  <tr><td>1</td><td>ESP32 3V3</td><td>MPU-6050 VCC</td><td>red</td></tr>
+  <tr><td>2</td><td>ESP32 GND</td><td>MPU-6050 GND</td><td>black</td></tr>
+  <tr><td>3</td><td>ESP32 GPIO21 (SDA)</td><td>MPU-6050 SDA</td><td>yellow</td></tr>
+  <tr><td>4</td><td>ESP32 GPIO22 (SCL)</td><td>MPU-6050 SCL</td><td>green</td></tr>
+  <tr><td>5</td><td>ESP32 GPIO34 (ADC)</td><td>Pot wiper (middle pin)</td><td>blue</td></tr>
+  <tr><td>6</td><td>Pot outer pin 1</td><td>3V3</td><td>red</td></tr>
+  <tr><td>7</td><td>Pot outer pin 2</td><td>GND</td><td>black</td></tr>
+  <tr><td>8</td><td>USB cable</td><td>powered USB hub (power)</td><td>—</td></tr>
+</table>
+<p class="legend-note">GPIO34 is input-only → perfect for the potentiometer. 5 wires + USB per node.</p>
+
+<h3>2.2 Main hub — pin map</h3>
+<table>
+  <tr><th>Function</th><th>Pins (ESP32 DevKit v1)</th><th>Wires</th></tr>
+  <tr><td>ESP-NOW (4 nodes)</td><td>Wi-Fi radio</td><td>none (wireless)</td></tr>
+  <tr><td>Uplink to laptop</td><td>UART0 via onboard USB chip</td><td>1 USB cable</td></tr>
+  <tr><td>Ring port A → L1</td><td>U1TXD GPIO10 / U1RXD GPIO9</td><td>2 wires + GND</td></tr>
+  <tr><td>Ring port B → L2</td><td>U2TXD GPIO17 / U2RXD GPIO16</td><td>2 wires + GND</td></tr>
+  <tr><td>(optional) LoRa RX</td><td>SPI: MOSI 23, MISO 19, SCK 18, CS 5, GDO 4</td><td>5 wires + GND</td></tr>
+</table>
+
+<h3>2.3 Level Hub (L1 and L2 — identical)</h3>
+<table>
+  <tr><th>Function</th><th>Pins</th><th>Wires</th></tr>
+  <tr><td>Ring port A</td><td>UART1: TX GPIO10 / RX GPIO9</td><td>2 wires + GND</td></tr>
+  <tr><td>Ring port B</td><td>UART2: TX GPIO17 / RX GPIO16</td><td>2 wires + GND</td></tr>
+  <tr><td>RC522 RFID</td><td>SPI: SCK 18, MOSI 23, MISO 19, CS 5</td><td>4 wires + 3V3 + GND</td></tr>
+  <tr><td>Junction strip (route A)</td><td>GPIO22 via 330 Ω resistor</td><td>data + 5V + GND</td></tr>
+  <tr><td>Junction strip (route B)</td><td>GPIO21 via 330 Ω resistor</td><td>data + 5V + GND</td></tr>
+  <tr><td>Siren/buzzer (driver module)</td><td>GPIO25</td><td>2 wires</td></tr>
+  <tr><td>Power</td><td>USB</td><td>1 cable</td></tr>
+</table>
+
+<h3>2.4 The ring backbone — the exact 7 wires (your “different wires?” question)</h3>
+<table>
+  <tr><th>Wire</th><th>From</th><th>To</th><th>Color</th></tr>
+  <tr><td><b>W1</b></td><td>MAIN U1TXD (GPIO10)</td><td>L1 U1RXD (GPIO9)</td><td>orange</td></tr>
+  <tr><td><b>W2</b></td><td>L1 U1TXD (GPIO10)</td><td>MAIN U1RXD (GPIO9)</td><td>orange</td></tr>
+  <tr><td><b>W3</b></td><td>L1 U2TXD (GPIO17)</td><td>L2 U2RXD (GPIO16)</td><td>purple</td></tr>
+  <tr><td><b>W4</b></td><td>L2 U2TXD (GPIO17)</td><td>L1 U2RXD (GPIO16)</td><td>purple</td></tr>
+  <tr><td><b>W5</b></td><td>L2 U1TXD (GPIO10)</td><td>MAIN U2RXD (GPIO16)</td><td>teal</td></tr>
+  <tr><td><b>W6</b></td><td>MAIN U2TXD (GPIO17)</td><td>L2 U1RXD (GPIO9)</td><td>teal</td></tr>
+  <tr><td><b>W7</b></td><td><b>COMMON GND BUS</b> — all boards’ GND + USB-hub GND, one black wire</td><td>—</td><td>black</td></tr>
+</table>
+<p><b>Rules:</b> ① always cross TX↔RX (never TX→TX) ② one shared GND bus — non-negotiable ③ 115200 baud, 8N1 ④ put a <b>toggle switch in series with W4 (or hop-2 GND)</b> for the clean “wire cut” demo. No level shifters needed — everything is 3.3 V ESP32.</p>
+<div class="card">
+<b>Topology note — bidirectional (full-duplex) triangle, not a one-way ring.</b><br>
+Each hop has <b>two separate wires (one TX per direction) → true full-duplex, simultaneous both ways</b> — no time-slots, no half-duplex switching, no MAX485. With 3 hubs this forms a triangle: every hub is directly linked to <i>both</i> neighbours, so there are always two paths between any pair.
+Failure math: <b>0 cuts</b> → all direct · <b>1 cut</b> → all 3 hubs still directly connected (Case C demo, zero relaying) · <b>2 cuts</b> → one hub isolates (documented limit).
+A <i>unidirectional</i> circulating ring would die on a single cut (which is why FDDI needed dual counter-rotating rings) — full-duplex per hop is what makes one-cut survivability free.
+RS-485 half-duplex would use the <b>same 7 wires</b> (each hop still needs 2 conductors) plus transceivers and arbitration — no benefit at 3 nodes; kept as the production backbone per SRS.
+</div>
+
+<!-- ============================================================ 3. NORMAL OPERATION -->
+<h2>3. Normal Operation — the two flows</h2>
+<div class="grid2">
+<div>
+<h3>Flow 1 · UPLINK (sensors → screen) — continuous, 2 Hz</h3>
+<p class="step"><span class="num">1</span>Node firmware samples MPU-6050 (I2C) + pot (ADC) every <b>500 ms</b>.</p>
+<p class="step"><span class="num">2</span>Sends <code>{"node":2,"seq":481,"disp":12.3,"tilt":0.4,"acc":0.02}</code> by ESP-NOW to the hub <i>and</i> its two ring neighbours (they store it — this is what makes relay possible).</p>
+<p class="step"><span class="num">3</span>Main hub forwards every packet as a JSON line over USB serial to Flask.</p>
+<p class="step"><span class="num">4</span>Flask ticker (500 ms): updates state, computes v/a, writes <b>PostgreSQL</b> (2 Hz), pushes to 60 s model buffers.</p>
+<p class="step"><span class="num">5</span>Every 1 s the <b>XGBoost model</b> predicts TTF per node (or kinematic fallback).</p>
+<p class="step"><span class="num">6</span>Dashboard polls <code>/api/telemetry</code> + <code>/api/ai</code> every 500 ms → gauges, TTF pill, GIS map update.</p>
+</div>
+<div>
+<h3>Flow 2 · DOWNLINK (decision → mine) — on alert</h3>
+<p class="step"><span class="num">1</span>Status logic flips a node to WARNING/CRITICAL (a &gt; 0.25 / a ≥ 3.0 mm/s²) → route state BLOCKED.</p>
+<p class="step"><span class="num">2</span>Server writes alert commands over serial: <code>{"cmd":"route","level":1,"route":"A","state":"BLOCKED"}</code>, <code>{"cmd":"siren","level":2,"on":true}</code>, <code>{"cmd":"rfid_zone","level":1,"zone":"Safe Exit"}</code>.</p>
+<p class="step"><span class="num">3</span>Main hub relays down the ring (hop 1 → L1; hop 3 → L2; heartbeats every 2 s keep the ring alive).</p>
+<p class="step"><span class="num">4</span>Level Hub lights its 2 junction strips <b>green→red</b> on blocked routes, fires the siren, and re-maps the RFID gate zone.</p>
+<p class="step"><span class="num">5</span>Simultaneously the alert engine fires <b>email + SMS</b> to the Safety Officer’s phone.</p>
+<p class="step"><span class="num">6</span>RFID swipes flow back UP the ring → live mustering headcount on the dashboard.</p>
+</div>
+</div>
+
+<!-- ============================================================ 4. FAILURE CASES -->
+<h2>4. Every Failure Case — what breaks, what happens, what the judges see</h2>
+
+<!-- CASE A -->
+<div class="case heal">
+<h3><span class="tag info">CASE A</span> Surface node’s direct link degrades (N2) → mesh relays the data</h3>
+<svg viewBox="0 0 640 250" xmlns="http://www.w3.org/2000/svg" font-family="Calibri, Arial, sans-serif">
+  <circle cx="120" cy="80" r="22" fill="#EAF2FA" stroke="#2E74B5" stroke-width="2.5"/><text x="120" y="85" text-anchor="middle" font-size="12" font-weight="700" fill="#1F4E79">N1</text>
+  <circle cx="320" cy="80" r="22" fill="#FDECEA" stroke="#C0392B" stroke-width="2.5"/><text x="320" y="85" text-anchor="middle" font-size="12" font-weight="700" fill="#C0392B">N2</text>
+  <circle cx="520" cy="80" r="22" fill="#EAF2FA" stroke="#2E74B5" stroke-width="2.5"/><text x="520" y="85" text-anchor="middle" font-size="12" font-weight="700" fill="#1F4E79">N3</text>
+  <rect x="255" y="165" width="130" height="50" rx="8" fill="#1F4E79"/><text x="320" y="188" text-anchor="middle" font-size="11.5" font-weight="700" fill="#fff">MAIN HUB</text><text x="320" y="203" text-anchor="middle" font-size="9" fill="#A9C4E0">seq-gap watchdog</text>
+  <line x1="142" y1="80" x2="290" y2="170" stroke="#5B9BD5" stroke-width="2" stroke-dasharray="6 4"/>
+  <line x1="498" y1="80" x2="350" y2="170" stroke="#5B9BD5" stroke-width="2" stroke-dasharray="6 4"/>
+  <line x1="320" y1="102" x2="320" y2="163" stroke="#C0392B" stroke-width="3" stroke-dasharray="4 4"/>
+  <line x1="306" y1="112" x2="334" y2="138" stroke="#C0392B" stroke-width="4"/>
+  <line x1="332" y1="112" x2="304" y2="138" stroke="#C0392B" stroke-width="4"/>
+  <text x="330" y="140" font-size="10" fill="#C0392B" font-weight="700">link degraded / lost</text>
+  <line x1="142" y1="92" x2="298" y2="172" stroke="#1E8E5A" stroke-width="3.5" marker-end="url(#aG)"/>
+  <line x1="140" y1="104" x2="180" y2="140" stroke="#1E8E5A" stroke-width="3.5"/>
+  <text x="60" y="150" font-size="10.5" font-weight="700" fill="#1E8E5A">N1 re-transmits N2’s packets</text>
+  <line x1="498" y1="92" x2="344" y2="172" stroke="#1E8E5A" stroke-width="2" stroke-dasharray="6 4"/>
+  <text x="430" y="150" font-size="10" fill="#1E8E5A">N3 also hears (backup)</text>
+  <text x="36" y="240" font-size="10.5" fill="#5A6672">Mechanism: every node stores the last ~20 packets of each neighbour · hub notices a seq gap · issues REQ · a neighbour re-sends.</text>
+</svg>
+<p><b>What happens:</b> hub detects missing seq numbers from N2 → requests them → <b>N1 retransmits</b> (N3 is the backup). No data lost, no model impact — the TTF countdown keeps running on N2’s relayed values.</p>
+<div class="dash"><b>Dashboard:</b> N2 card badge → <span class="warn">N2 · via relay (N1)</span> · event log: “Mesh reroute: N2 via N1 (seq 482–489)” · TTF pill: <span class="ok">unaffected</span></div>
+<p class="legend-note"><b>Demo move:</b> cover N2’s antenna (or flip its “relay-only” switch) for 10 s → badge appears → uncover → back to direct. <i>“Kill a link, the mesh heals in &lt;2 s.”</i></p>
+</div>
+
+<!-- CASE B -->
+<div class="case dead">
+<h3><span class="tag fail">CASE B</span> Node destroyed (N3 powered off) → Last-Gasp packet + sacrificial-hardware story</h3>
+<svg viewBox="0 0 640 250" xmlns="http://www.w3.org/2000/svg" font-family="Calibri, Arial, sans-serif">
+  <circle cx="120" cy="80" r="22" fill="#EAF2FA" stroke="#2E74B5" stroke-width="2.5"/><text x="120" y="85" text-anchor="middle" font-size="12" font-weight="700" fill="#1F4E79">N1</text>
+  <circle cx="320" cy="80" r="22" fill="#EAF2FA" stroke="#2E74B5" stroke-width="2.5"/><text x="320" y="85" text-anchor="middle" font-size="12" font-weight="700" fill="#1F4E79">N2</text>
+  <circle cx="520" cy="80" r="22" fill="#EDEDED" stroke="#999" stroke-width="2.5" stroke-dasharray="5 4"/><text x="520" y="85" text-anchor="middle" font-size="12" font-weight="700" fill="#888">N3</text>
+  <line x1="505" y1="62" x2="535" y2="98" stroke="#C0392B" stroke-width="3.5"/>
+  <line x1="535" y1="62" x2="505" y2="98" stroke="#C0392B" stroke-width="3.5"/>
+  <text x="548" y="60" font-size="10" font-weight="700" fill="#C0392B">POWER LOST</text>
+  <rect x="255" y="165" width="130" height="50" rx="8" fill="#1F4E79"/><text x="320" y="188" text-anchor="middle" font-size="11.5" font-weight="700" fill="#fff">MAIN HUB</text><text x="320" y="203" text-anchor="middle" font-size="9" fill="#A9C4E0">marks N3 OFFLINE</text>
+  <line x1="142" y1="80" x2="290" y2="170" stroke="#5B9BD5" stroke-width="2" stroke-dasharray="6 4"/>
+  <line x1="298" y1="80" x2="330" y2="170" stroke="#5B9BD5" stroke-width="2" stroke-dasharray="6 4"/>
+  <path d="M 498 92 L 360 168" stroke="#C0392B" stroke-width="3" marker-end="url(#aR)"/>
+  <text x="400" y="120" font-size="10.5" font-weight="700" fill="#C0392B">LAST-GASP packet</text>
+  <text x="380" y="134" font-size="9.5" fill="#C0392B">(brownout interrupt → 1 final TX)</text>
+  <text x="36" y="240" font-size="10.5" fill="#5A6672">Firmware: brownout detector → fires {"node":3,"last":true, final disp/acc} before the radio dies. The destruction itself delivers alarm data.</text>
+</svg>
+<p><b>What happens:</b> N3’s brownout interrupt fires one final <b>Last-Gasp</b> packet → hub marks N3 OFFLINE → mesh keeps running with 3 nodes → surviving N1/N2/N4 define the collapse boundary (“crater mapping” story).</p>
+<div class="dash"><b>Dashboard:</b> N3 card → <span class="err">OFFLINE · last-gasp received 14:02:33</span> · GIS map: N3 red ×, zone polygon shaded · event: “N3 terminal anomaly — final values logged” · other nodes: <span class="ok">normal</span></div>
+<p class="legend-note"><b>Demo move:</b> flip N3’s power switch → burst of red → hold 10 s for the judges. <i>“Even destroyed, the node reports.”</i></p>
+</div>
+
+<!-- CASE C -->
+<div class="case heal">
+<h3><span class="tag heal">CASE C</span> Ring backbone wire cut (L1 ↔ L2) → ring heals, both levels stay live</h3>
+<svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" font-family="Calibri, Arial, sans-serif">
+  <rect x="255" y="20" width="130" height="46" rx="8" fill="#1F4E79"/><text x="320" y="48" text-anchor="middle" font-size="11.5" font-weight="700" fill="#fff">MAIN HUB</text>
+  <rect x="110" y="150" width="130" height="46" rx="8" fill="#1F4E79"/><text x="175" y="178" text-anchor="middle" font-size="11.5" font-weight="700" fill="#fff">LEVEL-1 HUB</text>
+  <rect x="400" y="150" width="130" height="46" rx="8" fill="#1F4E79"/><text x="465" y="178" text-anchor="middle" font-size="11.5" font-weight="700" fill="#fff">LEVEL-2 HUB</text>
+  <path d="M 285 66 L 195 150" stroke="#1E8E5A" stroke-width="4.5" marker-end="url(#aG)"/>
+  <text x="150" y="105" font-size="10.5" font-weight="700" fill="#1E8E5A">hop 1 intact</text>
+  <path d="M 455 66 L 545 150" stroke="#1E8E5A" stroke-width="4.5" marker-end="url(#aG)"/>
+  <text x="470" y="105" font-size="10.5" font-weight="700" fill="#1E8E5A">hop 3 intact</text>
+  <line x1="240" y1="173" x2="400" y2="173" stroke="#CCC" stroke-width="4" stroke-dasharray="7 6"/>
+  <line x1="298" y1="160" x2="342" y2="186" stroke="#C0392B" stroke-width="4.5"/>
+  <line x1="342" y1="160" x2="298" y2="186" stroke="#C0392B" stroke-width="4.5"/>
+  <text x="270" y="205" font-size="10.5" font-weight="700" fill="#C0392B">hop 2 CUT (toggle switched off)</text>
+  <text x="60" y="245" font-size="10.5" fill="#5A6672">Key insight: in a 3-node ring, cutting ANY ONE segment still leaves both Level Hubs</text>
+  <text x="60" y="260" font-size="10.5" fill="#5A6672">directly connected to the Main Hub — no relaying even needed. Cut TWO segments → one level isolates (honest limit).</text>
+  <text x="60" y="285" font-size="10.5" fill="#5A6672">Detection: heartbeats every 2 s per port; seq gap &gt; 4 s → “segment broken” report + reroute flag.</text>
+</svg>
+<div class="dash"><b>Dashboard:</b> underground schematic → <span class="err">L1↔L2 segment: RED (broken)</span> · <span class="ok">reroute: direct via MAIN — all hubs live</span> · L2 junctions + siren + RFID: <span class="ok">still receiving alerts</span></div>
+<p class="legend-note"><b>Demo move:</b> flip the hop-2 switch → red segment on screen → wave at L2’s LEDs: still flashing alerts. <i>“Cut the mine’s spine — it walks on the other leg.”</i></p>
+</div>
+
+<!-- CASE D -->
+<div class="case">
+<h3><span class="tag info">CASE D</span> AI model file removed → graceful degradation (FALLBACK)</h3>
+<svg viewBox="0 0 640 210" xmlns="http://www.w3.org/2000/svg" font-family="Calibri, Arial, sans-serif">
+  <rect x="30" y="40" width="150" height="120" rx="8" fill="#F5F9FD" stroke="#BDD7EE"/>
+  <text x="105" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="#1F4E79">EDGE SERVER (boots fine)</text>
+  <rect x="50" y="76" width="110" height="30" rx="4" fill="#fff" stroke="#CCC" stroke-dasharray="4 3"/>
+  <text x="105" y="95" text-anchor="middle" font-size="9.5" fill="#888">models/ — REMOVED</text>
+  <line x1="80" y1="80" x2="130" y2="102" stroke="#C0392B" stroke-width="2.5"/>
+  <line x1="130" y1="80" x2="80" y2="102" stroke="#C0392B" stroke-width="2.5"/>
+  <rect x="50" y="116" width="110" height="30" rx="4" fill="#E8F6EF" stroke="#1E8E5A"/>
+  <text x="105" y="135" text-anchor="middle" font-size="9.5" font-weight="700" fill="#1E8E5A">kinematic v/a ACTIVE</text>
+  <line x1="180" y1="100" x2="330" y2="100" stroke="#2E74B5" stroke-width="2.5" marker-end="url(#aB)"/>
+  <text x="215" y="92" font-size="10" fill="#2E74B5">TTF = v / a</text>
+  <rect x="330" y="75" width="150" height="50" rx="8" fill="#fff" stroke="#2E74B5" stroke-width="2"/>
+  <text x="405" y="95" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1F4E79">/api/ai</text>
+  <text x="405" y="111" text-anchor="middle" font-size="9.5" fill="#444">status: FALLBACK</text>
+  <rect x="330" y="140" width="280" height="44" rx="6" fill="#10263B"/>
+  <text x="345" y="158" font-size="10" fill="#CFE3F3" font-family="Consolas, monospace">"model": "Kinematic Extrapolation Fallback"</text>
+  <text x="345" y="173" font-size="10" fill="#7BE3A5" font-family="Consolas, monospace">"status": "FALLBACK" → API never breaks</text>
+  <text x="30" y="198" font-size="10.5" fill="#5A6672">Same guards as before: WARMING UP 60 s buffer · 5 s staleness · physics sanity. Drills still count down (v/a during ramps ≈ 3 s).</text>
+</svg>
+<p><b>What happens:</b> server boots normally, <code>/api/ai</code> reports <b>FALLBACK</b>, TTF pill runs on Fukuzono kinematics. Restore <code>models/</code> → restart → ACTIVE in ~60 s.</p>
+<p class="legend-note"><b>Demo move:</b> <code>mv models models_bak &amp;&amp; restart</code> in front of the judges. <i>“Break the AI — the system degrades, it never dies.”</i></p>
+</div>
+
+<!-- CASE E -->
+<div class="case">
+<h3><span class="tag info">CASE E (optional)</span> LoRa node at distance → range proof, same pipeline</h3>
+<svg viewBox="0 0 640 190" xmlns="http://www.w3.org/2000/svg" font-family="Calibri, Arial, sans-serif">
+  <circle cx="120" cy="90" r="22" fill="#EAF2FA" stroke="#2E74B5" stroke-width="2.5"/><text x="120" y="88" text-anchor="middle" font-size="11" font-weight="700" fill="#1F4E79">N4</text><text x="120" y="102" text-anchor="middle" font-size="9" fill="#444">+ SX1278</text>
+  <path d="M 150 70 A 40 40 0 0 1 150 110" fill="none" stroke="#E8862D" stroke-width="2.5"/>
+  <path d="M 162 58 A 58 58 0 0 1 162 122" fill="none" stroke="#E8862D" stroke-width="2"/>
+  <path d="M 174 46 A 78 78 0 0 1 174 134" fill="none" stroke="#E8862D" stroke-width="1.5"/>
+  <text x="185" y="38" font-size="10" font-weight="700" fill="#E8862D">LoRa 433 MHz · 50–100 m away</text>
+  <rect x="430" y="65" width="150" height="50" rx="8" fill="#1F4E79"/><text x="505" y="86" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">MAIN HUB</text><text x="505" y="102" text-anchor="middle" font-size="9" fill="#A9C4E0">SX1278 RX</text>
+  <line x1="255" y1="90" x2="428" y2="90" stroke="#E8862D" stroke-width="3" marker-end="url(#aO)"/>
+  <text x="300" y="130" font-size="10.5" fill="#5A6672">Same JSON, same seq logic, same model input — only the radio changed.</text>
+  <text x="300" y="148" font-size="10.5" fill="#5A6672">Dashboard badge: <tspan font-weight="700" fill="#E8862D">N4 · LoRa uplink</tspan></text>
+</svg>
+<p class="legend-note">Proof that the mesh is <b>transport-agnostic</b>: Wi-Fi P2P on the diorama, LoRa in the field — backend, model and dashboard untouched.</p>
+</div>
+
+<!-- ============================================================ 5. PROTOCOL -->
+<h2>5. Wire Protocol Quick-Reference</h2>
+<table>
+  <tr><th>Packet</th><th>Direction</th><th>Rate</th><th>Example</th></tr>
+  <tr><td>Telemetry</td><td>Node → Hub (+ 2 neighbours hear)</td><td>2 Hz</td><td><code>{"node":2,"seq":481,"disp":12.3,"tilt":0.4,"acc":0.02}</code></td></tr>
+  <tr><td>Last-gasp</td><td>Dying node → Hub</td><td>once</td><td><code>{"node":3,"seq":512,"last":true,"disp":38.1,"acc":2.9}</code></td></tr>
+  <tr><td>Relay request / re-send</td><td>Hub ↔ Node</td><td>on gap</td><td><code>{"relay":"REQ","node":2,"from":482,"to":489}</code></td></tr>
+  <tr><td>Ring heartbeat</td><td>Each hub → both ring ports</td><td>every 2 s</td><td><code>{"id":"L1","hop":"A","seq":900}</code></td></tr>
+  <tr><td>Ring fault report</td><td>Hub → Server</td><td>on change</td><td><code>{"ring":"fault","seg":"L1-L2","reroute":"direct-via-MAIN"}</code></td></tr>
+  <tr><td>Alert command</td><td>Server → Hub → Level Hubs</td><td>on alert</td><td><code>{"cmd":"route","level":1,"route":"A","state":"BLOCKED"}</code></td></tr>
+  <tr><td>Siren / zone</td><td>Server → Level Hub</td><td>on alert</td><td><code>{"cmd":"siren","level":2,"on":true}</code> · <code>{"cmd":"rfid_zone","level":1,"zone":"Safe Exit"}</code></td></tr>
+  <tr><td>RFID scan</td><td>Level Hub → Hub → Server</td><td>per swipe</td><td><code>{"uid":"002","level":1,"time":"14:02:11"}</code></td></tr>
+</table>
+
+<h2>6. Case Summary Table (cheat sheet for demo day)</h2>
+<table>
+  <tr><th>Case</th><th>You do</th><th>System does</th><th>Judges see</th></tr>
+  <tr><td><b>A</b> — link degrade</td><td>cover N2 antenna 10 s</td><td>seq-gap → N1 relays, &lt;2 s</td><td>“via relay (N1)” badge, data continuous</td></tr>
+  <tr><td><b>B</b> — node destroyed</td><td>flip N3 power switch</td><td>brownout → last-gasp → OFFLINE</td><td>final packet logged, zone shaded, mesh keeps 3 nodes</td></tr>
+  <tr><td><b>C</b> — ring cut</td><td>flip hop-2 toggle</td><td>heartbeat gap → reroute direct</td><td>red segment on schematic, L2 still alerted</td></tr>
+  <tr><td><b>D</b> — AI removed</td><td><code>mv models models_bak</code>, restart</td><td>clean FALLBACK boot</td><td>kinematic countdown keeps working</td></tr>
+  <tr><td><b>E</b> — LoRa (opt.)</td><td>point N4 across the room</td><td>same pipeline over 433 MHz</td><td>“LoRa uplink” badge at real distance</td></tr>
+</table>
+
+<footer>Neural Strata · Team Geosentinels · Connection &amp; Operation Map v2 · companion to SRS v1.1 / 4.5 runbook · all 3.3 V logic — no level shifters · ring = 6 signal wires + 1 common GND</footer>
+</div>
+</body>
+</html>
