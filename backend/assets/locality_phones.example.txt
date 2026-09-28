@@ -1,0 +1,4 @@
+# One phone number per line, in international form.
+# Copy this file to locality_phones.txt on the bench laptop and put the real
+# numbers there. locality_phones.txt is not part of the GitHub repository.
+# +910000000000

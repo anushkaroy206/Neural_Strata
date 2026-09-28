@@ -216,3 +216,25 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# --- Neural Strata: stay on the bench machine, not on GitHub ---------------
+# Design documents, presentations, and screenshots.
+/docs/
+
+# Rehearsal databases, black-box stores, and csv captures.
+*.csv
+*.sqlite
+*.sqlite3
+*.sqlite-shm
+*.sqlite-wal
+*.jsonl
+/runtime/
+/backend/runtime/
+
+# Local contact list. The shape is locality_phones.example.txt.
+/backend/assets/locality_phones.txt
+
+# Machine junk and editor state.
+.DS_Store
+.cursor/
+.pio/
