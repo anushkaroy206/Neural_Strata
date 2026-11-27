@@ -4,7 +4,7 @@ Goal: an XGBoost model predicting **seconds until 100 mm displacement breach**,
 integrated into `app.py` so the dashboard's TTF pill + AI view go from
 "kinematic estimate" to "model forecast" with zero frontend changes.
 
-## Status
+## STATUS
 | Sub-phase | What | Status |
 |---|---|---|
 | 4.1 | Harvest: nominal + failure drills → `datasets/drill_dataset.csv` | ✅ done — 18 runs (9 breach / 9 stable), 7870 windows |
